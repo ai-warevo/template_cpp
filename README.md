@@ -4,6 +4,7 @@
 > Pick a template, run one command, start coding.
 
 [![Selftest](https://github.com/ai-warevo/template_cpp/actions/workflows/selftest.yml/badge.svg)](https://github.com/ai-warevo/template_cpp/actions/workflows/selftest.yml)
+<br />
 [![ShellCheck](https://github.com/ai-warevo/template_cpp/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/ai-warevo/template_cpp/actions/workflows/shellcheck.yml)
 
 The repository root stays clean. `CMakeLists.txt`, `src/`, `include/`, `tests/` and (for some templates) `examples/` appear only after `make init`.
