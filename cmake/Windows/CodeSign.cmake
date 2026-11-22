@@ -56,9 +56,9 @@ function(aw_code_sign_target)
     endif()
 
     if(_SIGN_SKIP_TIMESTAMP)
-        # Sign without timestamp (ignore errors if no cert)
+        # Sign without timestamp
         add_custom_command(TARGET ${_SIGN_TARGET} POST_BUILD
-            COMMAND powershell.exe -Command "& '${_sign_tool}' sign /s MY /n '${_SIGN_CERT_NAME}' /fd SHA256 '$<TARGET_FILE:${_SIGN_TARGET}>' 2>$null; exit 0"
+            COMMAND powershell.exe -Command "& '${_sign_tool}' sign /s MY /n '${_SIGN_CERT_NAME}' /fd SHA256 '$<TARGET_FILE:${_SIGN_TARGET}>'"
             COMMENT "Signing ${_SIGN_TARGET} without timestamp..."
             VERBATIM
         )
@@ -78,9 +78,8 @@ function(aw_code_sign_target)
                 "}; "
                 "if (-not $signed) { "
                 "    Write-Warning '[template_cpp] All timestamp servers failed. Signing locally without timestamp...'; "
-                "    & '${_sign_tool}' sign /s MY /n '${_SIGN_CERT_NAME}' /fd SHA256 '$<TARGET_FILE:${_SIGN_TARGET}>' 2>`$null "
-                "}; "
-                "exit 0"
+                "    & '${_sign_tool}' sign /s MY /n '${_SIGN_CERT_NAME}' /fd SHA256 '$<TARGET_FILE:${_SIGN_TARGET}>' "
+                "}"
             COMMENT "Signing ${_SIGN_TARGET} with resilient timestamp fallback..."
             VERBATIM
         )
