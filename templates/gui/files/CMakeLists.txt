@@ -123,6 +123,15 @@ if(@@NAME_UPPER@@_BUILD_APP)
         SOURCES src/main.cpp
         LINK_LIBRARIES @@NS@@::ui glfw OpenGL::GL)
 
+    # Hide console window on Windows
+    if(WIN32)
+        if(MSVC)
+            target_link_options(@@NAME@@_app PRIVATE /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup)
+        elseif(MINGW)
+            target_link_options(@@NAME@@_app PRIVATE -mwindows)
+        endif()
+    endif()
+
     if(@@NAME_UPPER@@_WARNINGS_AS_ERRORS)
         aw_configure_compiler(TARGET @@NAME@@_app STRICT_WARNINGS)
     endif()
