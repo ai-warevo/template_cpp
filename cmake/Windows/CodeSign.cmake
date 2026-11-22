@@ -38,9 +38,11 @@
 #      powershell> $base64 = [System.Convert]::ToBase64String($bytes)
 #      powershell> $base64 | Set-Content "$env:USERPROFILE\Desktop\cert.b64"
 #
-#   4. Add GitHub secrets (repo Settings → Secrets → New):
-#      - SIGNING_CERTIFICATE = paste entire cert.b64 content
-#      - CERTIFICATE_PASSWORD = YourPassword123
+#   4. Add GitHub secrets (repo Settings → Secrets and variables → Actions → Secrets → New repository secret):
+#      - Name: SIGNING_CERTIFICATE
+#        Value: paste entire cert.b64 content
+#      - Name: CERTIFICATE_PASSWORD
+#        Value: YourPassword123
 #
 #   5. Delete local files after upload:
 #      powershell> Remove-Item "$env:USERPROFILE\Desktop\cert.pfx", "$env:USERPROFILE\Desktop\cert.b64"
