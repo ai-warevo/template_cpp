@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace @@NS_OPEN@@
+@@NS_OPEN@@
 
 /// Application state and configuration (pure C++23, zero imgui.h or OS headers).
 struct AppState {

@@ -2,7 +2,7 @@
 
 #include <@@NS_PATH@@/types.hpp>
 
-namespace @@NS_OPEN@@
+@@NS_OPEN@@
 
 /// Overlay demo panel that draws shapes to the overlay canvas.
 class OverlayDemoPanel final : public IPanel {

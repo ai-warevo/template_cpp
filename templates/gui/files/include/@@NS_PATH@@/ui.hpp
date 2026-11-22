@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace @@NS_OPEN@@
+@@NS_OPEN@@
 
 class PanelRegistry;
 struct AppState;

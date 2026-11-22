@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace @@NS_OPEN@@
+@@NS_OPEN@@
 
 /// Panel identifiers for registration and lookup.
 enum class PanelId : std::uint32_t {

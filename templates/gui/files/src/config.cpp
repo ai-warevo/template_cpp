@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string_view>
 
-namespace @@NS_OPEN@@
+@@NS_OPEN@@
 
     namespace {
 
@@ -46,7 +46,7 @@ namespace @@NS_OPEN@@
         return false;
     }
 
-} // namespace @@NS_OPEN@@ namespace
+} // @@NS_OPEN@@ namespace
 
 bool Config::save(const std::string& path, const AppState& state) {
     std::ofstream file(path);

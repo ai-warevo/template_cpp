@@ -20,7 +20,7 @@ endmacro()
 
 function(aw_project_setup)
     set(_oneValue PREFIX)
-    set(_options BUILD_TESTS BUILD_EXAMPLES INSTALL)
+    set(_options BUILD_TESTS BUILD_EXAMPLES BUILD_APP BUILD_OVERLAY INSTALL)
     cmake_parse_arguments(_SETUP "${_options}" "${_oneValue}" "" ${ARGN})
 
     if(NOT _SETUP_PREFIX)
@@ -39,6 +39,14 @@ function(aw_project_setup)
     if(_SETUP_BUILD_EXAMPLES)
         option(${_SETUP_PREFIX}_BUILD_EXAMPLES
             "Build ${_SETUP_PREFIX} examples" ${PROJECT_IS_TOP_LEVEL})
+    endif()
+    if(_SETUP_BUILD_APP)
+        option(${_SETUP_PREFIX}_BUILD_APP
+            "Build ${_SETUP_PREFIX} standalone application" ON)
+    endif()
+    if(_SETUP_BUILD_OVERLAY)
+        option(${_SETUP_PREFIX}_BUILD_OVERLAY
+            "Build ${_SETUP_PREFIX} embeddable overlay library" ON)
     endif()
     if(_SETUP_INSTALL)
         option(${_SETUP_PREFIX}_INSTALL

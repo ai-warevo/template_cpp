@@ -2,7 +2,7 @@
 
 #include <imgui.h>
 
-namespace @@NS_OPEN@@
+@@NS_OPEN@@
 
     GeneralPanel::GeneralPanel(AppState& state)
     : state_(state) {}

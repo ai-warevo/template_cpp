@@ -1,5 +1,6 @@
 #include <@@NS_PATH@@/@@NAME_ID@@.hpp>
 
+#include "gl_loader.hpp"
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -10,7 +11,7 @@
 #include <memory>
 
 // Forward declarations for panels
-namespace @@NS_OPEN@@class GeneralPanel;
+@@NS_OPEN@@class GeneralPanel;
 class OverlayDemoPanel;
 @@NS_CLOSE@@
 

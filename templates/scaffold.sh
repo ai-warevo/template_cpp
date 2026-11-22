@@ -195,7 +195,9 @@ cmd_init() {
     fi
     type=$(resolve_type "$type")
 
-    [ -d "$out" ] || die "output directory '$out' does not exist"
+    if [ ! -d "$out" ]; then
+        mkdir -p "$out" || die "could not create output directory '$out'"
+    fi
     out=$(cd "$out" && pwd)
     case $out/ in "$TPL_DIR"/*) die "refusing to generate inside templates/" ;; esac
 
@@ -300,6 +302,13 @@ EOF
         [ -e "$out/$m" ] && existing="$existing $m"
     done
 
+    # Check if output directory is not empty (excluding .git and other hidden dirs that may exist)
+    local other_files=''
+    if [ "$(find "$out" -maxdepth 1 -not -path '*/.*' -type f 2>/dev/null | wc -l)" -gt 0 ] || \
+       [ "$(find "$out" -maxdepth 1 -not -path '*/.*' -type d 2>/dev/null | wc -l)" -gt 1 ]; then
+        other_files=1
+    fi
+
     say "Template : $type"
     say "Name     : $name   (id: $P_NAME_ID)"
     say "Namespace: $ns"
@@ -314,8 +323,20 @@ EOF
         return 0
     fi
 
-    if [ -n "$existing" ]; then
-        warn "overwriting existing project files:$existing (replaced unconditionally)"
+    # Prompt before merging into non-empty directory
+    if [ -n "$existing" ] || [ -n "$other_files" ]; then
+        if [ -n "$existing" ]; then
+            warn "The following managed files will be REPLACED unconditionally:$existing"
+        fi
+        if [ -n "$other_files" ]; then
+            warn "Output directory '$out' is not empty — existing files will be merged with generated content."
+        fi
+        printf 'Proceed? [y/N] ' >&2
+        read -r answer
+        case $answer in
+            [Yy] | [Yy][Ee][Ss]) : ;;
+            *) say "Aborted."; exit 0 ;;
+        esac
     fi
     for m in $MANAGED; do
         [ "$m" = examples ] && [ ! -e "$stage/examples" ] && continue

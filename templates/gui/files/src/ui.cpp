@@ -4,7 +4,7 @@
 
 #include <imgui.h>
 
-namespace @@NS_OPEN@@
+@@NS_OPEN@@
 
     UiRoot::UiRoot(AppState& state, PanelRegistry& registry)
     : state_(state),

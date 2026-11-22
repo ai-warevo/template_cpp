@@ -1,6 +1,6 @@
 #include <@@NS_PATH@@/types.hpp>
 
-namespace @@NS_OPEN@@
+@@NS_OPEN@@
 
     void
     OverlayCanvas::push_command(const DrawCommand& cmd) {

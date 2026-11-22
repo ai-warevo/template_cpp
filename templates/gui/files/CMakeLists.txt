@@ -77,34 +77,11 @@ if(NOT TARGET imgui)
         ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
         ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp)
 
-    # Download GL3W loader sources
-    FetchContent_Declare(
-        gl3w
-        GIT_REPOSITORY https://github.com/skaslev/gl3w.git
-        GIT_TAG master
-        GIT_SHALLOW ON
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND "")
-    FetchContent_MakeAvailable(gl3w)
-    
-    # Generate GL3W headers (requires Python)
-    execute_process(
-        COMMAND python3 gl3w_gen.py
-        WORKING_DIRECTORY ${gl3w_SOURCE_DIR}
-        RESULT_VARIABLE GL3W_GEN_RESULT
-        OUTPUT_QUIET ERROR_QUIET)
-    if(NOT GL3W_GEN_RESULT EQUAL 0)
-        message(FATAL_ERROR "Failed to generate GL3W headers. Ensure Python 3 is installed.")
-    endif()
-
     target_include_directories(imgui SYSTEM PUBLIC
         ${imgui_SOURCE_DIR}
-        ${imgui_SOURCE_DIR}/backends
-        ${gl3w_SOURCE_DIR}/include)
+        ${imgui_SOURCE_DIR}/backends)
 
-    target_sources(imgui PRIVATE ${gl3w_SOURCE_DIR}/src/gl3w.c)
-    target_link_libraries(imgui PUBLIC glfw OpenGL::GL ${CMAKE_DL_LIBS})
-    target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GL3W)
+    target_link_libraries(imgui PUBLIC glfw OpenGL::GL)
     set_target_properties(imgui PROPERTIES CXX_STANDARD 23)
 endif()
 

@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace @@NS_OPEN@@
+@@NS_OPEN@@
 
 /// General settings panel with ImGui controls.
 class GeneralPanel final : public IPanel {

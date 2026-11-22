@@ -2,7 +2,7 @@
 
 #include <imgui.h>
 
-namespace @@NS_OPEN@@
+@@NS_OPEN@@
 
     OverlayDemoPanel::OverlayDemoPanel(OverlayCanvas& canvas)
     : canvas_(canvas) {}

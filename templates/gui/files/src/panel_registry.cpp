@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace @@NS_OPEN@@
+@@NS_OPEN@@
 
     void
     PanelRegistry::register_panel(std::shared_ptr<IPanel> panel) {
