@@ -19,29 +19,34 @@
 #      powershell> Import-PfxCertificate -FilePath "cert.pfx" -CertStoreLocation "Cert:\CurrentUser\My"
 #
 #   2. Find certificate subject CN:
-#      powershell> Get-ChildItem Cert:\CurrentUser\My | Select Subject
-#      Output: CN=AI-Warevo Code Signing, O=AI-Warevo, ...
+#      powershell> Get-ChildItem Cert:\CurrentUser\My | Select-Object Subject, Thumbprint
+#      Output: CN=AI-Warevo Code Signing    B9D8F29E35D76F255CDE5D751797263D14EE9B4D
 #      Use CERT_NAME: "AI-Warevo Code Signing"
 #
 #   CI/CD BUILD (GitHub Actions):
 #   =============================
-#   1. Export certificate + private key:
-#      powershell> $cert = Get-ChildItem Cert:\CurrentUser\My | Where { $_.Subject -like "*YourName*" }
-#      powershell> $pwd = ConvertTo-SecureString "password" -AsPlainText -Force
-#      powershell> Export-PfxCertificate -Cert $cert -FilePath "cert.pfx" -Password $pwd
+#   1. Find your certificate:
+#      powershell> Get-ChildItem Cert:\CurrentUser\My | Select-Object Subject
 #
-#   2. Encode to base64:
-#      powershell> $bytes = [System.IO.File]::ReadAllBytes("cert.pfx")
-#      powershell> [System.Convert]::ToBase64String($bytes) | Set-Content "cert.b64"
-#      powershell> (Get-Content "cert.b64") | wc -c  # verify not empty
+#   2. Export certificate + private key:
+#      powershell> $cert = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -eq "CN=AI-Warevo Code Signing" }
+#      powershell> $pwd = ConvertTo-SecureString "YourPassword123" -AsPlainText -Force
+#      powershell> Export-PfxCertificate -Cert $cert -FilePath "$env:USERPROFILE\Desktop\cert.pfx" -Password $pwd
 #
-#   3. Add GitHub secrets:
-#      - Go to repo Settings → Secrets → New secret
+#   3. Encode to base64:
+#      powershell> $bytes = [System.IO.File]::ReadAllBytes("$env:USERPROFILE\Desktop\cert.pfx")
+#      powershell> $base64 = [System.Convert]::ToBase64String($bytes)
+#      powershell> $base64 | Set-Content "$env:USERPROFILE\Desktop\cert.b64"
+#
+#   4. Add GitHub secrets (repo Settings → Secrets → New):
 #      - SIGNING_CERTIFICATE = paste entire cert.b64 content
-#      - CERTIFICATE_PASSWORD = your password
+#      - CERTIFICATE_PASSWORD = YourPassword123
 #
-#   4. Workflow will auto-import certificate before build
-#      (see .github/workflows/release.yml)
+#   5. Delete local files after upload:
+#      powershell> Remove-Item "$env:USERPROFILE\Desktop\cert.pfx", "$env:USERPROFILE\Desktop\cert.b64"
+#
+#   6. Clear FetchContent cache to get updated modules:
+#      powershell> Remove-Item -Recurse -Force "build/_deps/aw_cmake_modules-*"
 #
 # PARAMETERS:
 #   TARGET              - CMake target name (required)
