@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace @ @NS_OPEN @ @
+namespace @@NS_OPEN@@
 
     void
     PanelRegistry::register_panel(std::shared_ptr<IPanel> panel) {
@@ -28,4 +28,4 @@ const OverlayCanvas& PanelRegistry::overlay_canvas() const {
     return overlay_canvas_;
 }
 
-@ @NS_CLOSE @ @
+@@NS_CLOSE@@

@@ -1,6 +1,6 @@
 #include <@@NS_PATH@@/types.hpp>
 
-namespace @ @NS_OPEN @ @
+namespace @@NS_OPEN@@
 
     void
     OverlayCanvas::push_command(const DrawCommand& cmd) {
@@ -15,4 +15,4 @@ void OverlayCanvas::clear() {
     commands_.clear();
 }
 
-@ @NS_CLOSE @ @
+@@NS_CLOSE@@

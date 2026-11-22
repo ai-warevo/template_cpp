@@ -10,9 +10,9 @@
 #include <memory>
 
 // Forward declarations for panels
-namespace @ @NS_OPEN @ @class GeneralPanel;
+namespace @@NS_OPEN@@class GeneralPanel;
 class OverlayDemoPanel;
-@ @NS_CLOSE @ @
+@@NS_CLOSE@@
 
     namespace {
     void glfw_error_callback(int error, const char* description) {
@@ -93,16 +93,16 @@ int main() {
     ImGui_ImplOpenGL3_Init("#version 330");
 
     // Application state and registry
-    @ @NS @ @ ::AppState app_state;
-    @ @NS @ @ ::PanelRegistry registry;
+    @@NS@@ ::AppState app_state;
+    @@NS@@ ::PanelRegistry registry;
 
     // Register panels (forward-declared, defined in src/panels/)
     // Note: Panel implementations include their own headers
-    registry.register_panel(std::make_shared<@ @NS @ @ ::GeneralPanel>(app_state));
-    registry.register_panel(std::make_shared<@ @NS @ @ ::OverlayDemoPanel>(registry.overlay_canvas()));
+    registry.register_panel(std::make_shared<@@NS@@ ::GeneralPanel>(app_state));
+    registry.register_panel(std::make_shared<@@NS@@ ::OverlayDemoPanel>(registry.overlay_canvas()));
 
     // UI root
-    @ @NS @ @ ::UiRoot ui_root(app_state, registry);
+    @@NS@@ ::UiRoot ui_root(app_state, registry);
 
     // Setup initial style
     setup_imgui_style(app_state.dark_mode);

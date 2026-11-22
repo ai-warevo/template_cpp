@@ -1,7 +1,7 @@
 // Placeholder for overlay worker class (platform-agnostic shared logic).
 // Future expansion point for overlay processing, threading, or batching.
 
-namespace @ @NS_OPEN @ @
+namespace @@NS_OPEN@@
 
     class OverlayWorker {
 public:
@@ -12,4 +12,4 @@ public:
     // For now, this is a placeholder for architectural separation
 }; // namespace @@NS_OPEN@@class OverlayWorker
 
-@ @NS_CLOSE @ @
+@@NS_CLOSE@@

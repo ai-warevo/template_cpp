@@ -4,7 +4,7 @@
 
 #include <imgui.h>
 
-namespace @ @NS_OPEN @ @
+namespace @@NS_OPEN@@
 
     UiRoot::UiRoot(AppState& state, PanelRegistry& registry)
     : state_(state),
@@ -35,4 +35,4 @@ void UiRoot::render() {
     ImGui::End();
 }
 
-@ @NS_CLOSE @ @
+@@NS_CLOSE@@

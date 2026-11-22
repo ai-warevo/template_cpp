@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string_view>
 
-namespace @ @NS_OPEN @ @
+namespace @@NS_OPEN@@
 
     namespace {
 
@@ -105,4 +105,4 @@ bool Config::load(const std::string& path, AppState& state) {
     return true;
 }
 
-@ @NS_CLOSE @ @
+@@NS_CLOSE@@

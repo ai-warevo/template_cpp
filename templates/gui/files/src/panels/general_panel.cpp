@@ -2,7 +2,7 @@
 
 #include <imgui.h>
 
-namespace @ @NS_OPEN @ @
+namespace @@NS_OPEN@@
 
     GeneralPanel::GeneralPanel(AppState& state)
     : state_(state) {}
@@ -48,4 +48,4 @@ std::string GeneralPanel::name() const {
     return "General";
 }
 
-@ @NS_CLOSE @ @
+@@NS_CLOSE@@
