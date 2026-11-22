@@ -47,7 +47,7 @@ function(aw_code_sign_target)
     endif()
 
     # Find signtool.exe
-    include(Windows/WindowsSDK)
+    include("${CMAKE_CURRENT_LIST_DIR}/WindowsSDK.cmake")
     aw_find_winsdk_tool(_sign_tool signtool.exe PROGRAM x64)
 
     if(NOT _sign_tool)
