@@ -21,12 +21,10 @@ add_executable(@@NAME@@_tests
 target_link_libraries(@@NAME@@_tests PRIVATE
     @@NAME@@_core
     Catch2::Catch2WithMain
+    Threads::Threads
 )
 
-target_compile_options(@@NAME@@_tests PRIVATE
-    -Wall -Wextra -Wpedantic
-    -std=c++23
-)
+set_target_properties(@@NAME@@_tests PROPERTIES CXX_STANDARD 23)
 
 # Register tests with CMake
 include(Catch)

@@ -1,60 +1,64 @@
 #include <@@NS_PATH@@/types.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <memory>
 
 namespace {
+
 class MockPanel : public @@NS@@::IPanel {
 public:
-    explicit MockPanel(@@NS@@::PanelId id)
-        : id_(id) {}
+    explicit MockPanel(@@NS@@::PanelId id) : id_(id) {}
 
-    @@NS@@::PanelId id() const override {
-        return id_;
-    }
-    const char* name() const override { return "MockPanel"; }
-    void render(@@NS@@::AppState&) override { ++render_count; }
+    @@NS@@::PanelId id() const override { return id_; }
+    std::string name() const override { return "MockPanel"; }
+    void render() override { ++render_count; }
 
     int render_count = 0;
 
 private:
     @@NS@@::PanelId id_;
 };
+
 } // namespace
 
-TEST_CASE("PanelRegistry registers and looks up panels", "[panel_registry]") {
+TEST_CASE("PanelRegistry registers and retrieves panels", "[panel_registry]") {
     @@NS@@::PanelRegistry registry;
 
-    auto panel1 = std::make_unique<MockPanel>(@@NS@@::PanelId::General);
-    auto panel2 = std::make_unique<MockPanel>(@@NS@@::PanelId::OverlayDemo);
+    auto panel1 = std::make_shared<MockPanel>(@@NS@@::PanelId::General);
+    auto panel2 = std::make_shared<MockPanel>(@@NS@@::PanelId::OverlayDemo);
 
-    auto* p1_ptr = panel1.get();
-    auto* p2_ptr = panel2.get();
+    registry.register_panel(panel1);
+    registry.register_panel(panel2);
 
-    registry.register_panel(std::move(panel1));
-    registry.register_panel(std::move(panel2));
+    auto retrieved1 = registry.get_panel(@@NS@@::PanelId::General);
+    auto retrieved2 = registry.get_panel(@@NS@@::PanelId::OverlayDemo);
 
-    // Lookup by ID
-    auto* found1 = registry.find(@@NS@@::PanelId::General);
-    auto* found2 = registry.find(@@NS@@::PanelId::OverlayDemo);
-
-    REQUIRE(found1 == p1_ptr);
-    REQUIRE(found2 == p2_ptr);
+    REQUIRE(retrieved1 != nullptr);
+    REQUIRE(retrieved2 != nullptr);
+    REQUIRE(retrieved1->id() == @@NS@@::PanelId::General);
+    REQUIRE(retrieved2->id() == @@NS@@::PanelId::OverlayDemo);
 }
 
-TEST_CASE("PanelRegistry returns all panels", "[panel_registry]") {
+TEST_CASE("PanelRegistry returns all registered panels", "[panel_registry]") {
     @@NS@@::PanelRegistry registry;
 
-    registry.register_panel(std::make_unique<MockPanel>(@@NS@@::PanelId::General));
-    registry.register_panel(std::make_unique<MockPanel>(@@NS@@::PanelId::OverlayDemo));
+    auto panel1 = std::make_shared<MockPanel>(@@NS@@::PanelId::General);
+    auto panel2 = std::make_shared<MockPanel>(@@NS@@::PanelId::OverlayDemo);
 
-    const auto& panels = registry.all();
+    registry.register_panel(panel1);
+    registry.register_panel(panel2);
 
+    const auto& panels = registry.panels();
     REQUIRE(panels.size() == 2);
+    CHECK(panels[0]->id() == @@NS@@::PanelId::General);
+    CHECK(panels[1]->id() == @@NS@@::PanelId::OverlayDemo);
 }
 
-TEST_CASE("PanelRegistry find returns nullptr for missing panel", "[panel_registry]") {
+TEST_CASE("PanelRegistry returns nullptr for unregistered panel", "[panel_registry]") {
     @@NS@@::PanelRegistry registry;
 
-    auto* not_found = registry.find(@@NS@@::PanelId::General);
+    auto panel = std::make_shared<MockPanel>(@@NS@@::PanelId::General);
+    registry.register_panel(panel);
 
+    auto not_found = registry.get_panel(@@NS@@::PanelId::OverlayDemo);
     REQUIRE(not_found == nullptr);
 }
