@@ -10,10 +10,9 @@
 #include <iostream>
 #include <memory>
 
-// Forward declarations for panels
-@@NS_OPEN@@class GeneralPanel;
-class OverlayDemoPanel;
-@@NS_CLOSE@@
+// Panel implementations
+#include "panels/general_panel.hpp"
+#include "panels/overlay_demo_panel.hpp"
 
     namespace {
     void glfw_error_callback(int error, const char* description) {

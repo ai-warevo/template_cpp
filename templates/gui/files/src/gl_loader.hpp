@@ -24,5 +24,3 @@
     #include <GL/gl.h>
     #include <GL/glext.h>
 #endif
-
-#endif // GL_LOADER_HPP

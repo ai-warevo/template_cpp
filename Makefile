@@ -8,10 +8,10 @@
 #
 #   make build | test | lint | format | clean      (BUILD_TYPE=Debug|Release, default Debug)
 #
-# Examples:
-#   make init TYPE=static NAME=my-lib NS=aw::foo
-#   make init TYPE=cli                      # NAME inferred from this directory's name, NS=aw::unnamed
-#   make init TYPE=lib TESTS=0              # alias for static, without tests/ and Catch2
+# Examples (generate in SEPARATE directory, not template_cpp root):
+#   make init TYPE=gui NAME=myapp NS=aw::myapp OUT=../my-gui-app
+#   make init TYPE=static NAME=mylib NS=aw::foo OUT=../my-static-lib
+#   make init TYPE=cli OUT=../my-cli-tool           # NAME inferred from OUT directory name
 #
 # Values reach scaffold.sh through the environment (AW_*), so no shell quoting is needed for NS=aw::foo etc.
 
@@ -50,8 +50,12 @@ help:
 	@echo "  make selftest    verify every template builds and passes its tests"
 	@echo "  make eject       remove templates/"
 	@echo ""
-	@echo "Project:"
+	@echo "Project (after generation):"
 	@echo "  make build | test | lint | format | clean   (BUILD_TYPE=Release for release)"
+	@echo ""
+	@echo "Quick start:"
+	@echo "  make init TYPE=gui NAME=myapp NS=aw::myapp OUT=../my-gui-app"
+	@echo "  cd ../my-gui-app && cmake --preset dev && cmake --build --preset dev"
 	@echo ""
 	@if [ -f templates/scaffold.sh ]; then $(SCAFFOLD) list; else echo "(templates/ has been ejected)"; fi
 
