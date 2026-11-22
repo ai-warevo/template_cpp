@@ -1,0 +1,4 @@
+# Suppress warnings for third-party test dependencies (Catch2, FetchContent artifacts)
+# The parent .clang-tidy already marks system headers, but this ensures test-specific ignores
+Checks: '-*,readability-identifier-naming'
+HeaderFilterRegex: ''

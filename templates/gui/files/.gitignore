@@ -1,0 +1,40 @@
+# Build artifacts
+/build/
+/build-*/
+*.o
+*.a
+*.so
+*.dll
+*.dylib
+*.exe
+*.app/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+compile_commands.json
+.cmake/
+
+# Presets
+CMakeUserPresets.json
+
+# IDE
+.vscode/
+.vs/
+.idea/
+*.user
+*.suo
+*.swp
+*.swo
+*~
+*.cbp
+*.layout
+
+# OS
+.DS_Store
+Thumbs.db
+
+# vcpkg
+vcpkg_installed/

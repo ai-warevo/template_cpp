@@ -44,3 +44,30 @@ Keep `CHANGELOG.md` in Keep a Changelog format. Add user-visible changes under `
 4. Put tests in `files/tests/`, with a local `CMakeLists.txt` and Catch2 v3 via FetchContent. The root `CMakeLists.txt` may only guard `tests/CMakeLists.txt` for `TESTS=0`.
 5. Use the documented placeholders such as `@@NS_OPEN@@`, `@@NS_CLOSE@@`, `@@NS_PATH@@`, and `@@NAME_ID@@`.
 6. Run `make selftest` and update the template table in `README.md`.
+
+### GUI Template Requirements
+
+The `gui` template has special architecture requirements:
+
+- **Three-layer separation:** Core (pure C++23, zero `imgui.h`), UI (ImGui rendering), and deliverables (app + overlay)
+- **Headless unit tests:** State/config/registry tests must run without GLFW/OpenGL initialization
+- **Platform-specific overlays:** Separate `overlay_win32.cpp` and `overlay_posix.cpp` with conditional compilation
+- **GUI-specific Docker image:** Use `Dockerfile.gui` (inherits from base, adds X11/OpenGL/GLFW/ImGui)
+- **CI support:** Xvfb for headless Linux testing; Windows native build
+
+### Dependency Caching
+
+**Local-first resolution strategy:**
+1. `FETCHCONTENT_SOURCE_DIR_<NAME>` (explicit local override)
+2. `/opt/deps` (Docker cache, pre-populated stable deps)
+3. `$ENV{AW_DEPS_DIR}` (user-defined cache directory)
+4. `find_package(... QUIET)` (system install)
+5. `FetchContent` (network fallback)
+
+**Docker pre-population:**
+- Base image: Catch2, spdlog, nlohmann/json (stable external deps)
+- GUI image: GLFW, Dear ImGui docking branch, X11/Mesa headers
+- **Do NOT** bake `aw::tpl` or `aw::tobus` — actively developed internal libs, always fetch fresh
+
+**CMake helper:** Use `aw_fetch_dependency(NAME ... GIT_REPOSITORY ... GIT_TAG ...)` in `AWProject.cmake`.
+

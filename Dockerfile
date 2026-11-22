@@ -54,3 +54,28 @@ RUN echo 'deb https://deb.debian.org/debian forky main' > /etc/apt/sources.list.
     ln -sf /usr/bin/clang-format-18 /usr/bin/clang-format && \
     g++-15 --version && \
     clang++-18 --version
+
+# Pre-populate stable third-party dependencies into /opt/deps for local-first caching
+ENV AW_DEPS_DIR=/opt/deps
+RUN mkdir -p /opt/deps/src && \
+    cd /opt/deps/src && \
+    # Catch2 v3
+    git clone --branch v3.5.0 --depth 1 https://github.com/catchorg/Catch2.git && \
+    cd Catch2 && mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps -DBUILD_TESTING=OFF && \
+    cmake --build . --parallel && cmake --install . && \
+    cd /opt/deps/src && rm -rf Catch2 && \
+    # spdlog
+    git clone --branch v1.12.0 --depth 1 https://github.com/gabime/spdlog.git && \
+    cd spdlog && mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps -DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_EXAMPLE=OFF && \
+    cmake --build . --parallel && cmake --install . && \
+    cd /opt/deps/src && rm -rf spdlog && \
+    # nlohmann/json
+    git clone --branch v3.11.3 --depth 1 https://github.com/nlohmann/json.git && \
+    cd json && mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps -DJSON_BuildTests=OFF && \
+    cmake --build . --parallel && cmake --install . && \
+    cd /opt/deps/src && rm -rf json && \
+    # Cleanup
+    cd / && rm -rf /opt/deps/src

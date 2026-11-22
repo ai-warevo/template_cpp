@@ -1,0 +1,47 @@
+# syntax=docker/dockerfile:1.7
+#
+# GUI-specific CI image (inherits from base ghcr.io/ai-warevo/ci-cpp23)
+# Adds X11/OpenGL dev packages, GLFW, Dear ImGui, and Xvfb for headless GUI testing.
+#
+# Pushed to ghcr.io/ai-warevo/ci-cpp23-gui
+
+FROM ghcr.io/ai-warevo/ci-cpp23:latest
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install X11/OpenGL/Mesa dev packages + Xvfb
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libx11-dev \
+        libxrandr-dev \
+        libxinerama-dev \
+        libxcursor-dev \
+        libxi-dev \
+        libgl1-mesa-dev \
+        libglu1-mesa-dev \
+        mesa-common-dev \
+        xvfb \
+        x11-utils && \
+    rm -rf /var/lib/apt/lists/*
+
+# Pre-populate GUI dependencies into /opt/deps
+RUN mkdir -p /opt/deps/src && \
+    cd /opt/deps/src && \
+    # GLFW 3.4
+    git clone --branch 3.4 --depth 1 https://github.com/glfw/glfw.git && \
+    cd glfw && mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps \
+        -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF && \
+    cmake --build . --parallel && cmake --install . && \
+    cd /opt/deps/src && rm -rf glfw && \
+    # Dear ImGui (docking branch) - headers only, no CMake target needed
+    git clone --branch v1.91.8-docking --depth 1 https://github.com/ocornut/imgui.git && \
+    mkdir -p /opt/deps/include/imgui && \
+    cp imgui/*.h imgui/*.cpp /opt/deps/include/imgui/ && \
+    cp imgui/backends/imgui_impl_glfw.* imgui/backends/imgui_impl_opengl3.* /opt/deps/include/imgui/ && \
+    rm -rf imgui && \
+    # Cleanup
+    cd / && rm -rf /opt/deps/src
+
+# Set display for Xvfb headless testing
+ENV DISPLAY=:99
