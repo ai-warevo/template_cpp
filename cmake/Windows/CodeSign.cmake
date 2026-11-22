@@ -48,7 +48,7 @@ function(aw_code_sign_target)
 
     # Find signtool.exe
     include(Windows/WindowsSDK)
-    aw_find_winsdk_tool(_sign_tool signtool.exe PROGRAM x64)
+    aw_find_winsdk_tool(VAR _sign_tool TOOL_NAME signtool.exe TYPE PROGRAM PLATFORM x64)
 
     if(NOT _sign_tool)
         message(WARNING "aw_code_sign_target(): signtool.exe not found — skipping signing for ${_SIGN_TARGET}")
