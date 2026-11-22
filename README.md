@@ -4,7 +4,7 @@
 > Pick a template, run one command, start coding.
 
 [![C++23](https://img.shields.io/badge/C++-%2300599C.svg?logo=c%2B%2B&logoColor=white)](https://cppreference.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 [![Coverage](https://raw.githubusercontent.com/ai-warevo/template_cpp/refs/heads/badges/coverage.svg)](https://ai-warevo.github.io/template_cpp)
 <br />
 [![Selftest](https://github.com/ai-warevo/template_cpp/actions/workflows/selftest.yml/badge.svg)](https://github.com/ai-warevo/template_cpp/actions/workflows/selftest.yml)
