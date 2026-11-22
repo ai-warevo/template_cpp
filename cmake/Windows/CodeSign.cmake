@@ -26,7 +26,7 @@ function(aw_code_sign_target)
 
     set(_oneValue TARGET CERT_NAME SKIP_TIMESTAMP)
     set(_multiValue TIMESTAMP_SERVERS)
-    cmake_parse_arguments(_SIGN "${_multiValue}" "${_oneValue}" "${_multiValue}" ${ARGN})
+    cmake_parse_arguments(_SIGN "" "${_oneValue}" "${_multiValue}" ${ARGN})
 
     if(NOT _SIGN_TARGET)
         message(FATAL_ERROR "aw_code_sign_target() requires TARGET argument")
@@ -47,7 +47,7 @@ function(aw_code_sign_target)
     endif()
 
     # Find signtool.exe
-    include(cmake/Windows/WindowsSDK)
+    include(Windows/WindowsSDK)
     aw_find_winsdk_tool(_sign_tool signtool.exe PROGRAM x64)
 
     if(NOT _sign_tool)
