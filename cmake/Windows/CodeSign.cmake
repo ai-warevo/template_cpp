@@ -5,19 +5,60 @@
 # are unavailable or rate-limited.
 #
 # Usage:
-#   include(cmake/Windows/CodeSign)
-#   aw_code_sign_target(my_target
-#       CERT_NAME "My Certificate"
-#       TIMESTAMP_SERVERS "http://timestamp.digicert.com"
-#                         "http://timestamp.acs.microsoft.com")
+#   include(Windows/CodeSign)
+#   aw_code_sign_target(TARGET my_target
+#       CERT_NAME "My Certificate Subject CN")
 #
 # Only works on Windows; silently returns on other platforms.
 #
-# Parameters:
-#   TARGET              - target name (required)
-#   CERT_NAME           - certificate subject name (default: "Code Signing")
-#   TIMESTAMP_SERVERS   - list of timestamp URLs (default: 5 well-known servers)
-#   SKIP_TIMESTAMP      - if ON, sign without timestamp
+# SETUP INSTRUCTIONS:
+#
+#   LOCAL BUILD (Windows Developer Machine):
+#   ==========================================
+#   1. Import certificate to Cert:\CurrentUser\My store:
+#      powershell> Import-PfxCertificate -FilePath "cert.pfx" -CertStoreLocation "Cert:\CurrentUser\My"
+#
+#   2. Find certificate subject CN:
+#      powershell> Get-ChildItem Cert:\CurrentUser\My | Select Subject
+#      Output: CN=AI-Warevo Code Signing, O=AI-Warevo, ...
+#      Use CERT_NAME: "AI-Warevo Code Signing"
+#
+#   CI/CD BUILD (GitHub Actions):
+#   =============================
+#   1. Export certificate + private key:
+#      powershell> $cert = Get-ChildItem Cert:\CurrentUser\My | Where { $_.Subject -like "*YourName*" }
+#      powershell> $pwd = ConvertTo-SecureString "password" -AsPlainText -Force
+#      powershell> Export-PfxCertificate -Cert $cert -FilePath "cert.pfx" -Password $pwd
+#
+#   2. Encode to base64:
+#      powershell> $bytes = [System.IO.File]::ReadAllBytes("cert.pfx")
+#      powershell> [System.Convert]::ToBase64String($bytes) | Set-Content "cert.b64"
+#      powershell> (Get-Content "cert.b64") | wc -c  # verify not empty
+#
+#   3. Add GitHub secrets:
+#      - Go to repo Settings → Secrets → New secret
+#      - SIGNING_CERTIFICATE = paste entire cert.b64 content
+#      - CERTIFICATE_PASSWORD = your password
+#
+#   4. Workflow will auto-import certificate before build
+#      (see .github/workflows/release.yml)
+#
+# PARAMETERS:
+#   TARGET              - CMake target name (required)
+#   CERT_NAME           - certificate Subject CN (required, case-sensitive)
+#   TIMESTAMP_SERVERS   - list of timestamp URLs (optional, uses default fallback)
+#   SKIP_TIMESTAMP      - if ON, sign without timestamp (not recommended)
+#
+# TROUBLESHOOTING:
+#   - "Cannot find certificate": Check Cert:\CurrentUser\My (use Get-ChildItem)
+#   - "CERT_NAME doesn't match": Must match CN exactly (case-sensitive)
+#   - "signtool.exe not found": Install Windows SDK or Visual Studio with C++ tools
+#   - "All timestamp servers failed": Build continues with local timestamp (not ideal)
+#
+# VERIFY SIGNATURE:
+#   powershell> Get-AuthenticodeSignature "output.exe" | Format-List *
+#   Should show Status: Valid, SignerCertificate with your CN
+
 
 function(aw_code_sign_target)
     if(NOT WIN32)
