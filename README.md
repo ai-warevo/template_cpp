@@ -1,7 +1,7 @@
 # ⚡ aw::template_cpp
 
 > **A minimal C++23 project generator, like `dotnet new`.**
-> Pick a template, run one command, start coding.
+> Pick a template, run one command, start coding. 
 
 [![C++23](https://img.shields.io/badge/C++-%2300599C.svg?logo=c%2B%2B&logoColor=white)](https://cppreference.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
