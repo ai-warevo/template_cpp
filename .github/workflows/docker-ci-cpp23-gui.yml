@@ -1,0 +1,122 @@
+name: Build & Push CI Docker GUI Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Image tag (default: latest)'
+        required: false
+        default: 'latest'
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  test-in-container:
+    name: Test GUI image in container
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build Dockerfile first (base dependency)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          load: true
+          tags: ci-cpp23:base
+          cache-from: type=gha
+
+      - name: Build GUI image for testing
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.gui
+          load: true
+          tags: ci-cpp23-gui:test
+          build-contexts: base=docker-image://ci-cpp23:base
+          cache-from: type=gha
+
+      - name: Verify toolchain versions
+        run: |
+          echo "=== g++ ==="
+          docker run --rm ci-cpp23-gui:test g++ --version | head -1
+          echo "=== clang++-18 ==="
+          docker run --rm ci-cpp23-gui:test clang++-18 --version | head -1
+          echo "=== cmake ==="
+          docker run --rm ci-cpp23-gui:test cmake --version | head -1
+          echo "=== ninja ==="
+          docker run --rm ci-cpp23-gui:test ninja --version
+          echo "=== clang-tidy ==="
+          docker run --rm ci-cpp23-gui:test clang-tidy --version | head -1
+          echo "=== clang-format ==="
+          docker run --rm ci-cpp23-gui:test clang-format --version | head -1
+          echo "=== gcovr ==="
+          docker run --rm ci-cpp23-gui:test gcovr --version
+
+      - name: Verify GUI dependencies
+        run: |
+          echo "=== GLFW ==="
+          docker run --rm ci-cpp23-gui:test ls -la /opt/deps/lib/pkgconfig/ | grep -i glfw || echo "GLFW not found in pkgconfig"
+          docker run --rm ci-cpp23-gui:test ls -la /opt/deps/lib/cmake/ | grep -i glfw || echo "GLFW not found in cmake"
+          echo "=== ImGui headers ==="
+          docker run --rm ci-cpp23-gui:test ls -la /opt/deps/include/imgui/ | head -20
+          echo "=== Xvfb ==="
+          docker run --rm ci-cpp23-gui:test which Xvfb
+
+      - name: Run selftest inside container
+        run: |
+          docker run --rm -v "${{ github.workspace }}:/workspace:rw" ci-cpp23-gui:test bash -c '
+            cd /workspace && \
+            bash templates/selftest.sh
+          '
+
+  build-and-push:
+    name: Build & Push GUI Image
+    needs: test-in-container
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/ai-warevo/ci-cpp23-gui
+          tags: |
+            type=raw,value=${{ github.event.inputs.tag || 'latest' }}
+            type=raw,value={{date 'YYYYMMDD'}}-{{sha}}
+
+      - name: Build and push GUI image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.gui
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
