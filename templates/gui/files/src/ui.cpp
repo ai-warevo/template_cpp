@@ -1,24 +1,48 @@
 #include <@@NS_PATH@@/ui.hpp>
-#include <@@NS_PATH@@/config.hpp>
 #include <@@NS_PATH@@/types.hpp>
 
 #include <imgui.h>
 
 @@NS_OPEN@@
 
-    UiRoot::UiRoot(AppState& state, PanelRegistry& registry)
-    : state_(state),
-      registry_(registry) {}
+UiRoot::UiRoot(PanelRegistry& registry)
+    : registry_(registry) {}
 
 void UiRoot::render() {
-    ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
 
-    if (ImGui::Begin("@@NAME@@ Control Panel", nullptr, ImGuiWindowFlags_NoMove)) {
-        ImGui::Text("Application: @@NAME@@");
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration |
+                                    ImGuiWindowFlags_NoMove |
+                                    ImGuiWindowFlags_NoResize |
+                                    ImGuiWindowFlags_NoSavedSettings |
+                                    ImGuiWindowFlags_NoBringToFrontOnFocus |
+                                    ImGuiWindowFlags_NoNavFocus;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+    if (ImGui::Begin("##MainWindow", nullptr, window_flags)) {
+        ImGui::PopStyleVar(3);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(16.0f, 16.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(12.0f, 8.0f));
+
+        ImGui::PushFont(ImGui::GetFont());
+        ImGui::Text("@@NAME@@");
+        ImGui::SameLine();
+        ImGui::TextDisabled("—");
+        ImGui::SameLine();
+        ImGui::TextDisabled("Application");
+        ImGui::PopFont();
+
         ImGui::Separator();
+        ImGui::Spacing();
 
-    if (ImGui::BeginTabBar("PanelTabs")) {
+        if (ImGui::BeginTabBar("MainTabs", ImGuiTabBarFlags_None)) {
             for (const auto& panel : registry_.panels()) {
                 if (ImGui::BeginTabItem(panel->name().c_str())) {
                     panel->render();
@@ -29,7 +53,15 @@ void UiRoot::render() {
         }
 
         ImGui::Separator();
-        ImGui::TextDisabled("Press F1 to toggle UI | ESC to quit");
+        ImGui::Spacing();
+        ImGui::TextDisabled("F1: toggle UI  |  ESC: quit");
+        #ifndef NDEBUG
+        ImGui::TextDisabled("F12: style editor (debug only)");
+        #endif
+
+        ImGui::PopStyleVar(2);
+    } else {
+        ImGui::PopStyleVar(3);
     }
     ImGui::End();
 }

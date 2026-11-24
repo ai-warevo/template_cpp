@@ -2,7 +2,6 @@
 #define @@NS_UPPER@@_GENERAL_PANEL_HPP
 
 #include <@@NS_PATH@@/types.hpp>
-#include <@@NS_PATH@@/config.hpp>
 
 #include <string>
 
@@ -11,14 +10,14 @@
 /// General settings panel with ImGui controls.
 class GeneralPanel final : public IPanel {
 public:
-    explicit GeneralPanel(AppState& state);
+    GeneralPanel();
 
     void render() override;
     [[nodiscard]] PanelId id() const override;
     [[nodiscard]] std::string name() const override;
 
 private:
-    AppState& state_;
+    std::string user_text_;
 };
 
 @@NS_CLOSE@@

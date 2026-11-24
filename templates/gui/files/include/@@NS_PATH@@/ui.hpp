@@ -6,19 +6,18 @@
 @@NS_OPEN@@
 
 class PanelRegistry;
-struct AppState;
 
 /// Root UI class that orchestrates all panels and rendering.
+/// Renders fullscreen tab bar with panel delegation.
 class UiRoot {
 public:
-    /// Construct with references to app state and panel registry.
-    explicit UiRoot(AppState& state, PanelRegistry& registry);
+    /// Construct with panel registry.
+    explicit UiRoot(PanelRegistry& registry);
 
     /// Render the UI (called each frame within ImGui context).
     void render();
 
 private:
-    AppState& state_;
     PanelRegistry& registry_;
 };
 

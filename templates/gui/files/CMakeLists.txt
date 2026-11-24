@@ -33,7 +33,7 @@ if(NOT TARGET aw::tpl)
             AW_TPL_INSTALL OFF)
 endif()
 
-# aw::tobus (Event Bus) - check parent directory first
+# aw::tobus (Event Bus)
 if(NOT TARGET aw::tobus)
     aw_fetch_dependency(
         NAME aw_tobus
@@ -45,43 +45,59 @@ if(NOT TARGET aw::tobus)
             TOBUS_INSTALL OFF)
 endif()
 
-# GLFW (windowing + input)
-if(NOT TARGET glfw)
-    aw_fetch_dependency(
-        NAME glfw
-        GIT_REPOSITORY https://github.com/glfw/glfw.git
-        GIT_TAG 3.4
-        OPTIONS
-            GLFW_BUILD_DOCS OFF
-            GLFW_BUILD_TESTS OFF
-            GLFW_BUILD_EXAMPLES OFF
-            GLFW_BUILD_WAYLAND OFF
-            GLFW_INSTALL OFF)
-endif()
+# GLFW and ImGui (only needed if building app or overlay)
+if(@@NAME_UPPER@@_BUILD_APP OR @@NAME_UPPER@@_BUILD_OVERLAY)
+    # GLFW (windowing + input)
+    if(NOT TARGET glfw)
+        # Platform-specific GLFW options.
+        # Linux: use X11 only (Wayland support requires extra libraries).
+        if(UNIX AND NOT APPLE)
+            set(_glfw_options
+                GLFW_BUILD_DOCS OFF
+                GLFW_BUILD_TESTS OFF
+                GLFW_BUILD_EXAMPLES OFF
+                GLFW_BUILD_X11 ON
+                GLFW_BUILD_WAYLAND OFF
+                GLFW_BUILD_WAYLAND_LIBDECOR OFF
+                GLFW_INSTALL OFF)
+        else()
+            set(_glfw_options
+                GLFW_BUILD_DOCS OFF
+                GLFW_BUILD_TESTS OFF
+                GLFW_BUILD_EXAMPLES OFF
+                GLFW_INSTALL OFF)
+        endif()
+        
+        aw_fetch_dependency(
+            NAME glfw
+            GIT_REPOSITORY https://github.com/glfw/glfw.git
+            GIT_TAG 3.3.10
+            OPTIONS ${_glfw_options})
+    endif()
 
-# Dear ImGui (docking branch) - as static library with backends
-if(NOT TARGET imgui)
-    aw_fetch_dependency(
-        NAME imgui
-        GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.91.8-docking)
+    # Dear ImGui (docking branch)
+    if(NOT TARGET imgui)
+        aw_fetch_dependency(
+            NAME imgui
+            GIT_REPOSITORY https://github.com/ocornut/imgui.git
+            GIT_TAG v1.91.8-docking)
 
+        add_library(imgui STATIC
+            ${imgui_SOURCE_DIR}/imgui.cpp
+            ${imgui_SOURCE_DIR}/imgui_demo.cpp
+            ${imgui_SOURCE_DIR}/imgui_draw.cpp
+            ${imgui_SOURCE_DIR}/imgui_tables.cpp
+            ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+            ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+            ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp)
 
-    add_library(imgui STATIC
-        ${imgui_SOURCE_DIR}/imgui.cpp
-        ${imgui_SOURCE_DIR}/imgui_demo.cpp
-        ${imgui_SOURCE_DIR}/imgui_draw.cpp
-        ${imgui_SOURCE_DIR}/imgui_tables.cpp
-        ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-        ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
-        ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp)
+        target_include_directories(imgui SYSTEM PUBLIC
+            ${imgui_SOURCE_DIR}
+            ${imgui_SOURCE_DIR}/backends)
 
-    target_include_directories(imgui SYSTEM PUBLIC
-        ${imgui_SOURCE_DIR}
-        ${imgui_SOURCE_DIR}/backends)
-
-    target_link_libraries(imgui PUBLIC glfw OpenGL::GL)
-    set_target_properties(imgui PROPERTIES CXX_STANDARD 23)
+        target_link_libraries(imgui PUBLIC glfw OpenGL::GL)
+        set_target_properties(imgui PROPERTIES CXX_STANDARD 23)
+    endif()
 endif()
 
 # ── Target 1: @@NAME@@_core (static lib, pure C++23, zero imgui.h) ──
@@ -101,26 +117,51 @@ if(@@NAME_UPPER@@_WARNINGS_AS_ERRORS)
 endif()
 
 # ── Target 2: @@NAME@@_ui (static lib, ImGui + @@NAME@@_core) ──
-aw_add_library(TARGET @@NAME@@_ui TYPE STATIC ALIAS @@NS@@::ui
-    SOURCES
-        src/ui.cpp
-        src/panels/general_panel.cpp
-        src/panels/overlay_demo_panel.cpp
-    HEADERS
-        include/@@NS_PATH@@/ui.hpp
-        include/@@NS_PATH@@/@@NAME_ID@@.hpp
-    PUBLIC_INCLUDE_DIRS include
-    PUBLIC_LINKS @@NS@@::core imgui)
+# UI target is only needed if building app or overlay
+if(@@NAME_UPPER@@_BUILD_APP OR @@NAME_UPPER@@_BUILD_OVERLAY)
+    aw_add_library(TARGET @@NAME@@_ui TYPE STATIC ALIAS @@NS@@::ui
+        SOURCES
+            src/ui.cpp
+            src/panels/general_panel.cpp
+            src/panels/overlay_demo_panel.cpp
+        HEADERS
+            include/@@NS_PATH@@/ui.hpp
+        PUBLIC_INCLUDE_DIRS include
+        PUBLIC_LINKS @@NS@@::core imgui)
 
-if(@@NAME_UPPER@@_WARNINGS_AS_ERRORS)
-    aw_configure_compiler(TARGET @@NAME@@_ui STRICT_WARNINGS)
+    if(@@NAME_UPPER@@_WARNINGS_AS_ERRORS)
+        aw_configure_compiler(TARGET @@NAME@@_ui STRICT_WARNINGS)
+    endif()
 endif()
 
 # ── Target 3: @@NAME@@_app (executable, GLFW + OpenGL host) ──
 if(@@NAME_UPPER@@_BUILD_APP)
+    # Windows version resource and icon (Windows only)
+    if(WIN32)
+        include(Windows/WinVersion)
+        aw_win_version(
+            OUTVAR @@NAME_UPPER@@_WIN_RESOURCES
+            NAME "@@NAME@@"
+            VERSION_MAJOR ${PROJECT_VERSION_MAJOR}
+            VERSION_MINOR ${PROJECT_VERSION_MINOR}
+            VERSION_PATCH ${PROJECT_VERSION_PATCH}
+            COMPANY_NAME "Your Company"
+            COMPANY_COPYRIGHT "Copyright 2024 Your Company"
+            FILE_DESCRIPTION "@@NAME@@ Application"
+            COMMENTS "@@NAME@@ v${PROJECT_VERSION}"
+            ORIGINAL_FILENAME "@@NAME@@.exe"
+            INTERNAL_NAME "@@NAME@@"
+            ICON "${CMAKE_SOURCE_DIR}/product.ico"
+        )
+    endif()
+
     aw_add_executable(TARGET @@NAME@@_app
-        SOURCES src/main.cpp
+        SOURCES src/main.cpp ${@@NAME_UPPER@@_WIN_RESOURCES}
         LINK_LIBRARIES @@NS@@::ui glfw OpenGL::GL)
+
+    # Pass version from VERSION file as compile definition
+    target_compile_definitions(@@NAME@@_app PRIVATE
+        APP_VERSION="${PROJECT_VERSION}")
 
     # Hide console window on Windows
     if(WIN32)

@@ -26,7 +26,7 @@ struct DrawCommand {
     DrawType type = DrawType::Line;
     float x1 = 0.0f, y1 = 0.0f;
     float x2 = 0.0f, y2 = 0.0f;
-    float r = 0.0f;  /* radius for circle */
+    float r = 0.0f;  /* radius for circle. */
     std::uint32_t color = 0xFFFFFFFF;
 };
 
