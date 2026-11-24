@@ -331,12 +331,14 @@ EOF
         if [ -n "$other_files" ]; then
             warn "Output directory '$out' is not empty — existing files will be merged with generated content."
         fi
-        printf 'Proceed? [y/N] ' >&2
-        read -r answer
-        case $answer in
-            [Yy] | [Yy][Ee][Ss]) : ;;
-            *) say "Aborted."; exit 0 ;;
-        esac
+        if [ -t 0 ]; then
+            printf 'Proceed? [y/N] ' >&2
+            read -r answer
+            case $answer in
+                [Yy] | [Yy][Ee][Ss]) : ;;
+                *) say "Aborted."; exit 0 ;;
+            esac
+        fi
     fi
     for m in $MANAGED; do
         [ "$m" = examples ] && [ ! -e "$stage/examples" ] && continue
