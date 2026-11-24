@@ -45,6 +45,7 @@ Git for Windows does not ship `make`. Call the script directly instead:
 | `cli`     | `console`, `exe`, `app` | Executable: a small core library plus `main.cpp`               |
 | `static`  | `lib`, `library`      | Static library with a public header                              |
 | `dynamic` | `dll`, `so`, `shared` | Shared library with generated export macros (`GenerateExportHeader`) |
+| `gui`     | `ui`, `window`, `desktop` | Cross-platform GUI app + embeddable overlay (GLFW + Dear ImGui docking + event bus) |
 
 All templates are C++23 (`cxx_std_23`), with `-Wall -Wextra -Wpedantic` (or `/W4` on MSVC) and Catch2 v3 tests.
 
