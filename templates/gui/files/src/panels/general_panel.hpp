@@ -1,4 +1,5 @@
-#pragma once
+#ifndef @@NS_UPPER@@_GENERAL_PANEL_HPP
+#define @@NS_UPPER@@_GENERAL_PANEL_HPP
 
 #include <@@NS_PATH@@/types.hpp>
 #include <@@NS_PATH@@/config.hpp>
@@ -21,3 +22,5 @@ private:
 };
 
 @@NS_CLOSE@@
+
+#endif // @@NS_UPPER@@_GENERAL_PANEL_HPP

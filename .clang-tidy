@@ -55,7 +55,8 @@ Checks:
   - '-altera-*'
   - '-fuchsia-*'
   - '-android-*'
-  # Header guard: standard include guards (AW_<PROJECT>_<PATH>_HPP)
+  # Header guard: standard include guards (@@NS_UPPER@@_<FILE>_HPP or <DESCRIPTIVE>_HPP)
+  # See AGENTS.md "Header guards" section for naming convention
   - '-llvm-header-guard'
   # Non-private member variables: detail structs have public fields by design
   - '-misc-non-private-member-variables-in-classes'

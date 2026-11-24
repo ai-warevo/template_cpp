@@ -1,4 +1,5 @@
-#pragma once
+#ifndef @@NS_UPPER@@_TYPES_HPP
+#define @@NS_UPPER@@_TYPES_HPP
 
 #include <cstdint>
 #include <memory>
@@ -82,3 +83,5 @@ private:
 };
 
 @@NS_CLOSE@@
+
+#endif // @@NS_UPPER@@_TYPES_HPP

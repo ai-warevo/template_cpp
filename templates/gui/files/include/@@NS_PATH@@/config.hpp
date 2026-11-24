@@ -1,4 +1,5 @@
-#pragma once
+#ifndef @@NS_UPPER@@_CONFIG_HPP
+#define @@NS_UPPER@@_CONFIG_HPP
 
 #include <string>
 
@@ -29,3 +30,5 @@ public:
 };
 
 @@NS_CLOSE@@
+
+#endif // @@NS_UPPER@@_CONFIG_HPP

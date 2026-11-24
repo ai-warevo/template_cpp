@@ -77,3 +77,5 @@ The `gui` template has special architecture requirements:
 - **Prefer block syntax:** Use `/* ... */` for multi-line or standalone comments; reserve `//` for rare, ultra-short inline notes (e.g., `0xFF38BDF8; /* Cyan accent. */`) or mandatory tool directives (`// NOLINT`).
 - **API documentation:** Use Doxygen (`/// ...` or `/** ... */`) for public function, class, and type headers.
 
+## Header guards
+- Headers use standard C++ include guards (`#ifndef <GUARD>` / `#define <GUARD>` / `#endif // <GUARD>`) with unique `UPPER_SNAKE_CASE` macro names derived from the project and relative file path (e.g., `PROJECT_MODULE_FILE_HPP`).

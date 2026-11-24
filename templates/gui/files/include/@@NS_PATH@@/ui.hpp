@@ -1,4 +1,5 @@
-#pragma once
+#ifndef @@NS_UPPER@@_UI_HPP
+#define @@NS_UPPER@@_UI_HPP
 
 #include <memory>
 
@@ -22,3 +23,5 @@ private:
 };
 
 @@NS_CLOSE@@
+
+#endif // @@NS_UPPER@@_UI_HPP

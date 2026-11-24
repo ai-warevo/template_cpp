@@ -2,7 +2,8 @@
 /// Minimal OpenGL loader wrapper for Dear ImGui backends.
 /// Ensures GL functions are properly declared before ImGui uses them.
 
-#pragma once
+#ifndef GL_LOADER_HPP
+#define GL_LOADER_HPP
 
 /* Windows: GLFW provides bundled GL headers. Ensure windows.h is included first
    to avoid macro conflicts like NOMINMAX and MIN/MAX issues. */
@@ -25,3 +26,5 @@
     #include <OpenGL/gl.h>
     #include <OpenGL/glext.h>
 #endif
+
+#endif // GL_LOADER_HPP

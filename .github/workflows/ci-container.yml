@@ -62,8 +62,10 @@ jobs:
 
       - name: Scaffold template for linting
         run: |
-          bash templates/scaffold.sh init static --name ci_check --ns aw::ci
-          bash templates/scaffold.sh eject
+          mkdir -p /tmp/ci_check
+          bash templates/scaffold.sh init static --name ci_check --ns aw::ci --out /tmp/ci_check
+          cp -r /tmp/ci_check/* .
+          rm -rf /tmp/ci_check
 
       # Setup toolchain (container mode — no-op installer)
       - name: Setup toolchain
@@ -80,7 +82,7 @@ jobs:
           source_dir: .
           build_dir: build
           build_type: Release
-          extra_args: "${{ steps.tc.outputs.cmake_args }} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+          extra_args: "${{ steps.tc.outputs.cmake_args }} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_C_COMPILER= -DCMAKE_C_FLAGS="
           parallel: false
 
       - name: clang-format check
@@ -117,8 +119,10 @@ jobs:
       - name: Scaffold template for MSVC
         shell: bash
         run: |
-          bash templates/scaffold.sh init static --name ci_check --ns aw::ci
-          bash templates/scaffold.sh eject
+          mkdir -p /tmp/ci_check
+          bash templates/scaffold.sh init static --name ci_check --ns aw::ci --out /tmp/ci_check
+          cp -r /tmp/ci_check/* .
+          rm -rf /tmp/ci_check
 
       - name: Setup toolchain
         id: tc

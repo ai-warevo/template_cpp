@@ -1,4 +1,5 @@
-#pragma once
+#ifndef @@NS_UPPER@@_OVERLAY_DEMO_PANEL_HPP
+#define @@NS_UPPER@@_OVERLAY_DEMO_PANEL_HPP
 
 #include <@@NS_PATH@@/types.hpp>
 
@@ -18,3 +19,5 @@ private:
 };
 
 @@NS_CLOSE@@
+
+#endif // @@NS_UPPER@@_OVERLAY_DEMO_PANEL_HPP
