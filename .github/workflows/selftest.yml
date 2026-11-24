@@ -60,7 +60,7 @@ jobs:
       # 2. Scaffold template into workspace & eject templates/
       - name: Scaffold template
         run: |
-          bash templates/scaffold.sh init "${{ matrix.template }}" --name ci_check --ns aw::ci
+          AW_FORCE_ROOT=1 bash templates/scaffold.sh init "${{ matrix.template }}" --name ci_check --ns aw::ci
           bash templates/scaffold.sh eject
 
       # 3. clang-format check
@@ -120,7 +120,7 @@ jobs:
       - name: Scaffold template
         shell: bash
         run: |
-          bash templates/scaffold.sh init "${{ matrix.template }}" --name ci_check --ns aw::ci
+          AW_FORCE_ROOT=1 bash templates/scaffold.sh init "${{ matrix.template }}" --name ci_check --ns aw::ci
           bash templates/scaffold.sh eject
 
       - name: Configure ThreadSanitizer
