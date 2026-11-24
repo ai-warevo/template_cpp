@@ -76,7 +76,7 @@ build_and_test() { # DIR TESTS(1|0)
     fi
 }
 
-if [ $# -gt 0 ]; then TYPES="$*"; else TYPES=$($SCAFFOLD list | sed -n 's/^  \([^ ]*\) .*/\1/p'); fi
+if [ $# -gt 0 ]; then TYPES="$*"; else TYPES=$($SCAFFOLD list | grep -v '(internal:' | sed -n 's/^  \([^ ]*\) .*/\1/p'); fi
 [ -n "$TYPES" ] || fail "no templates found"
 
 section "generator checks"
@@ -107,7 +107,7 @@ for t in $TYPES; do
     section "template: $t"
     d=$(newproj_ver "$t-hyphen")
     # shellcheck disable=SC2086
-    $SCAFFOLD init "$t" --out "$d" --name my-lib --ns aw::foo::bar >/dev/null || fail "init $t failed"
+    echo y | $SCAFFOLD init "$t" --out "$d" --name my-lib --ns aw::foo::bar >/dev/null || fail "init $t failed"
     for p in CMakeLists.txt src include tests; do [ -e "$d/$p" ] || fail "$t: missing $p"; done
     [ -f "$d/include/aw/foo/bar/my_lib.hpp" ] || fail "$t: namespace/name path not rendered"
     grep -rq '@@' "$d/CMakeLists.txt" "$d/src" "$d/include" "$d/tests" && fail "$t: unresolved placeholder"
@@ -117,8 +117,8 @@ for t in $TYPES; do
 
     # Re-run over an existing project, without tests: must overwrite and drop tests/.
     # shellcheck disable=SC2086
-    $SCAFFOLD init "$t" --out "$d" --name other --no-tests 2>"$WORK/warn.txt" >/dev/null || fail "$t: re-init failed"
-    grep -q 'overwriting' "$WORK/warn.txt" || fail "$t: no overwrite warning"
+    echo y | $SCAFFOLD init "$t" --out "$d" --name other --no-tests 2>"$WORK/warn.txt" >/dev/null || fail "$t: re-init failed"
+    grep -q 'REPLACED\|overwriting' "$WORK/warn.txt" || fail "$t: no overwrite warning"
     [ ! -e "$d/tests" ] || fail "$t: tests/ not removed with --no-tests"
     [ ! -e "$d/include/aw/foo" ] || fail "$t: stale files survived re-init"
     build_and_test "$d" 0
@@ -127,7 +127,7 @@ for t in $TYPES; do
     # Name inferred from the directory, default namespace.
     d=$(newproj_ver "infer-$t/Inferred.Dir")
     # shellcheck disable=SC2086
-    $SCAFFOLD init "$t" --out "$d" >/dev/null || fail "$t: init with inferred name failed"
+    echo y | $SCAFFOLD init "$t" --out "$d" >/dev/null || fail "$t: init with inferred name failed"
     [ -f "$d/include/aw/unnamed/inferred_dir.hpp" ] || fail "$t: NAME inference / default NS failed"
     pass "$t: NAME inferred from directory, NS defaults to aw::unnamed"
 done
@@ -135,7 +135,7 @@ done
 section "static template extras"
 d=$(newproj_ver static-extras)
 # shellcheck disable=SC2086
-$SCAFFOLD init static --out "$d" --name tobus --ns aw::tobus >/dev/null || fail "static extras: init failed"
+echo y | $SCAFFOLD init static --out "$d" --name tobus --ns aw::tobus >/dev/null || fail "static extras: init failed"
 for p in examples/CMakeLists.txt examples/01_basic.cpp; do [ -e "$d/$p" ] || fail "static: missing $p"; done
 grep -q 'aw_add_library(TARGET tobus TYPE STATIC ALIAS aw::tobus' "$d/CMakeLists.txt" || fail "static: alias is not the namespace"
 grep -q 'HEADERS include/aw/tobus/tobus.hpp' "$d/CMakeLists.txt" || fail "static: no public headers"
@@ -177,7 +177,7 @@ pass "static: options default to OFF as a subproject"
 
 section "out directory"
 d=$(newproj_ver out-var)
-(cd "$ROOT_DIR" && AW_OUT="$d" AW_TYPE=static AW_NAME=x $SCAFFOLD init >/dev/null) || fail "AW_OUT init failed"
+(cd "$ROOT_DIR" && echo y | AW_OUT="$d" AW_TYPE=static AW_NAME=x $SCAFFOLD init >/dev/null) || fail "AW_OUT init failed"
 [ -f "$d/CMakeLists.txt" ] || fail "AW_OUT was not honoured"
 pass "AW_OUT selects the output directory"
 
