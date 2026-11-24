@@ -139,8 +139,9 @@ for t in $TYPES; do
 done
 
 section "static template extras"
-# Skip expensive extras tests on constrained environments (Windows MSVC, TSan)
-if [ "${SKIP_TEMPLATE_EXTRAS:-0}" = "1" ]; then
+# Skip expensive extras tests by default (install, find_package, subproject, eject)
+# Set RUN_TEMPLATE_EXTRAS=1 to include full tests
+if [ "${RUN_TEMPLATE_EXTRAS:-0}" != "1" ]; then
     pass "static: examples/, alias, FILE_SET and options rendered (skipped)"
     pass "static: -Werror build, tests, examples and install (skipped)"
     pass "static: installed package works with find_package(tobus) + aw::tobus (skipped)"
@@ -190,7 +191,7 @@ EOC
 fi
 
 section "out directory"
-if [ "${SKIP_TEMPLATE_EXTRAS:-0}" = "1" ]; then
+if [ "${RUN_TEMPLATE_EXTRAS:-0}" != "1" ]; then
     pass "AW_OUT selects the output directory (skipped)"
 else
     d=$(newproj_ver out-var)
@@ -200,7 +201,7 @@ else
 fi
 
 section "eject"
-if [ "${SKIP_TEMPLATE_EXTRAS:-0}" = "1" ]; then
+if [ "${RUN_TEMPLATE_EXTRAS:-0}" != "1" ]; then
     pass "eject removes templates/ (skipped)"
 else
     # Run eject on a copy so the real templates/ stays intact.
