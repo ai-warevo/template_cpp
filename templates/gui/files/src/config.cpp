@@ -46,7 +46,7 @@
         return false;
     }
 
-} // @@NS_OPEN@@ namespace
+} // namespace
 
 bool Config::save(const std::string& path, const AppState& state) {
     std::ofstream file(path);

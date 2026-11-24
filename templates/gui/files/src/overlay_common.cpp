@@ -1,15 +1,12 @@
-// Placeholder for overlay worker class (platform-agnostic shared logic).
-// Future expansion point for overlay processing, threading, or batching.
+/* Placeholder for platform-agnostic overlay processing logic.
+   Future expansion point for worker threads, command batching, or other shared handling. */
 
 @@NS_OPEN@@
 
-    class OverlayWorker {
+class OverlayWorker {
 public:
     OverlayWorker() = default;
     ~OverlayWorker() = default;
-
-    // Future: process overlay commands in a worker thread
-    // For now, this is a placeholder for architectural separation
-}; // @@NS_OPEN@@class OverlayWorker
+}; /* OverlayWorker */
 
 @@NS_CLOSE@@

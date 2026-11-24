@@ -4,12 +4,12 @@
 
 @@NS_OPEN@@
 
-    void
-    PanelRegistry::register_panel(std::shared_ptr<IPanel> panel) {
+void
+PanelRegistry::register_panel(std::shared_ptr<IPanel> panel) {
     if (panel) {
         panels_.push_back(std::move(panel));
     }
-} // namespace PanelRegistry::register_panel(std::shared_ptr<IPanel>panel)
+}
 
 std::shared_ptr<IPanel> PanelRegistry::get_panel(PanelId id) const {
     auto it = std::ranges::find_if(panels_, [id](const auto& p) { return p->id() == id; });

@@ -71,3 +71,9 @@ The `gui` template has special architecture requirements:
 
 **CMake helper:** Use `aw_fetch_dependency(NAME ... GIT_REPOSITORY ... GIT_TAG ...)` in `AWProject.cmake`.
 
+## C++ Comments
+
+- **Explain "Why" only:** Delete comments that merely narrate code (e.g., `// increment i`). Assume readers know C++. Keep only comments explaining intent, business logic, edge cases, or architectural decisions.
+- **Prefer block syntax:** Use `/* ... */` for multi-line or standalone comments; reserve `//` for rare, ultra-short inline notes (e.g., `0xFF38BDF8; /* Cyan accent. */`) or mandatory tool directives (`// NOLINT`).
+- **API documentation:** Use Doxygen (`/// ...` or `/** ... */`) for public function, class, and type headers.
+

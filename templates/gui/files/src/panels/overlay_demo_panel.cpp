@@ -19,7 +19,7 @@ void OverlayDemoPanel::render() {
             cmd.y1 = 100.0f;
             cmd.x2 = 300.0f;
             cmd.y2 = 200.0f;
-            cmd.color = 0xFF38BDF8; // Cyan accent
+            cmd.color = 0xFF38BDF8; /* Cyan accent. */
             canvas_.push_command(cmd);
         }
 
@@ -29,7 +29,7 @@ void OverlayDemoPanel::render() {
             cmd.x1 = 400.0f;
             cmd.y1 = 300.0f;
             cmd.r = 50.0f;
-            cmd.color = 0xFF6EE7B7; // Emerald accent
+            cmd.color = 0xFF6EE7B7; /* Emerald accent. */
             canvas_.push_command(cmd);
         }
 
@@ -40,7 +40,7 @@ void OverlayDemoPanel::render() {
             cmd.y1 = 150.0f;
             cmd.x2 = 600.0f;
             cmd.y2 = 250.0f;
-            cmd.color = 0xFFE9A568; // Amber accent
+            cmd.color = 0xFFE9A568; /* Amber accent. */
             canvas_.push_command(cmd);
         }
 

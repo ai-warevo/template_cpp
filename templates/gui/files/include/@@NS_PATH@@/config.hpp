@@ -6,22 +6,15 @@
 
 /// Application state and configuration (pure C++23, zero imgui.h or OS headers).
 struct AppState {
-    // Window settings
     int window_width = 1280;
     int window_height = 720;
-
-    // UI state
     bool ui_visible = true;
     float ui_opacity = 1.0f;
-
-    // User input
     std::string user_text;
-
-    // Theme
     bool dark_mode = false;
     float overlay_scale = 1.0f;
 
-    // Equality operator for testing
+    /* Defaulted equality for testing. */
     bool operator==(const AppState& other) const = default;
 };
 

@@ -18,8 +18,7 @@ void UiRoot::render() {
         ImGui::Text("Application: @@NAME@@");
         ImGui::Separator();
 
-        // Tabs for each panel
-        if (ImGui::BeginTabBar("PanelTabs")) {
+    if (ImGui::BeginTabBar("PanelTabs")) {
             for (const auto& panel : registry_.panels()) {
                 if (ImGui::BeginTabItem(panel->name().c_str())) {
                     panel->render();
