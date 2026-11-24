@@ -106,4 +106,5 @@ function(aw_fetch_dependency)
     endforeach()
 
     FetchContent_MakeAvailable(${_DEP_NAME})
+    set(${_DEP_NAME}_SOURCE_DIR "${${_DEP_NAME}_SOURCE_DIR}" PARENT_SCOPE)
 endfunction()
