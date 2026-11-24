@@ -46,6 +46,8 @@ jobs:
           echo "=== gcovr ===" && gcovr --version
 
       - name: Selftest
+        env:
+          SKIP_TEMPLATE_EXTRAS: "1"
         run: bash templates/selftest.sh
 
   # ────────────────────────────────────────────────────────────

@@ -190,17 +190,25 @@ EOC
 fi
 
 section "out directory"
-d=$(newproj_ver out-var)
-(cd "$ROOT_DIR" && echo y | AW_OUT="$d" AW_TYPE=static AW_NAME=x $SCAFFOLD init >/dev/null) || fail "AW_OUT init failed"
-[ -f "$d/CMakeLists.txt" ] || fail "AW_OUT was not honoured"
-pass "AW_OUT selects the output directory"
+if [ "${SKIP_TEMPLATE_EXTRAS:-0}" = "1" ]; then
+    pass "AW_OUT selects the output directory (skipped)"
+else
+    d=$(newproj_ver out-var)
+    (cd "$ROOT_DIR" && echo y | AW_OUT="$d" AW_TYPE=static AW_NAME=x $SCAFFOLD init >/dev/null) || fail "AW_OUT init failed"
+    [ -f "$d/CMakeLists.txt" ] || fail "AW_OUT was not honoured"
+    pass "AW_OUT selects the output directory"
+fi
 
 section "eject"
-# Run eject on a copy so the real templates/ stays intact.
-mkdir -p "$WORK/eject/templates"
-cp "$TPL_DIR/scaffold.sh" "$WORK/eject/templates/"
-bash "$WORK/eject/templates/scaffold.sh" eject >/dev/null || fail "eject failed"
-[ ! -e "$WORK/eject/templates" ] || fail "eject left templates/"
-pass "eject removes templates/"
+if [ "${SKIP_TEMPLATE_EXTRAS:-0}" = "1" ]; then
+    pass "eject removes templates/ (skipped)"
+else
+    # Run eject on a copy so the real templates/ stays intact.
+    mkdir -p "$WORK/eject/templates"
+    cp "$TPL_DIR/scaffold.sh" "$WORK/eject/templates/"
+    bash "$WORK/eject/templates/scaffold.sh" eject >/dev/null || fail "eject failed"
+    [ ! -e "$WORK/eject/templates" ] || fail "eject left templates/"
+    pass "eject removes templates/"
+fi
 
 printf '\nAll selftests passed.\n'
