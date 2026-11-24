@@ -14,6 +14,72 @@ Maintainer notes (see AGENTS.md, "Changelog and releases"):
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-24
+
+### Added
+
+- gui
+- gui
+- add cmake modules and base CMakeLists to _common for reuse
+- add CHANGELOG.md to _common template
+- add common root files to _common template
+- add CI templates (.github/workflows and release.yml)
+
+### Changed
+
+- fixik
+- fixik
+- wayland go away
+- eliminate remaining // comments in test files and inline comments
+- clean up C++ comments and update AGENTS.md
+- ci :3
+- update GitHub secrets path in instructions
+- clarify certificate export and FetchContent cache clearing
+- add certificate setup instructions directly in CodeSign.cmake
+- add comprehensive Windows code signing setup guide
+- ci
+- ai
+- ai
+- ai
+- remove CMakeLists.txt and duplicate CMakePresets.json from root
+- remove duplicated cmake modules from _common (use FetchContent)
+- ai slop
+- move CI/CD templates to _common for DRY
+- add known issues and solutions from gitsync project
+- parametrize container image in all workflows
+- use reusable-coverage-badge workflow
+- split coverage job into generate + deploy for container safety
+- remove duplicate workflow_dispatch trigger
+- add workflow_dispatch to weekly-deep for manual testing
+
+### Fixed
+
+- gui gg
+- ci
+- fix
+- fixes
+- wayland=off
+- fixes
+- fixes
+- ci
+- ai
+- selftest to auto-answer prompts and filter internal templates
+- remove tracked CMakeUserPresets.json and add shared CMakePresets.json root
+- tools
+- ignore code signing errors if certificate not found
+- use named arguments for aw_find_winsdk_tool()
+- use include(Windows/WindowsSDK) instead of CMAKE_CURRENT_LIST_DIR
+- use CMAKE_CURRENT_LIST_DIR for WindowsSDK include
+- correct include path and cmake_parse_arguments in CodeSign.cmake
+- ai slop
+- remove trailing slashes from gcovr_source_filter for consistency
+- remove env.CI_CONTAINER_IMAGE from container.image
+- enable coverage badge updates for scheduled/manual runs
+
+### Removed
+
+- remove exit 0 - let signing fail if cert not available
+
 ## [0.5.8] - 2026-11-22
 
 ### Changed
@@ -207,7 +273,8 @@ Maintainer notes (see AGENTS.md, "Changelog and releases"):
 
 - First release of the `template_cpp` repository.
 
-[Unreleased]: https://github.com/ai-warevo/template_cpp/compare/v0.5.8...HEAD
+[Unreleased]: https://github.com/ai-warevo/template_cpp/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/ai-warevo/template_cpp/compare/v0.5.8...v0.6.0
 [0.5.8]: https://github.com/ai-warevo/template_cpp/compare/v0.5.7...v0.5.8
 [0.5.7]: https://github.com/ai-warevo/template_cpp/compare/v0.5.6...v0.5.7
 [0.5.6]: https://github.com/ai-warevo/template_cpp/compare/v0.5.5...v0.5.6
