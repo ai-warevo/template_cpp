@@ -79,6 +79,11 @@ build_and_test() { # DIR TESTS(1|0)
 if [ $# -gt 0 ]; then TYPES="$*"; else TYPES=$($SCAFFOLD list | grep -v '(internal:' | sed -n 's/^  \([^ ]*\) .*/\1/p'); fi
 [ -n "$TYPES" ] || fail "no templates found"
 
+# Filter out GUI template if SKIP_GUI_TESTS is set (e.g., Windows, TSan without graphics)
+if [ "${SKIP_GUI_TESTS:-0}" = "1" ]; then
+    TYPES=$(printf '%s\n' $TYPES | grep -v '^gui$' | paste -sd' ' -)
+fi
+
 section "generator checks"
 d=$(newproj checks)
 # shellcheck disable=SC2086

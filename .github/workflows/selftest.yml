@@ -123,6 +123,8 @@ jobs:
 
       - name: Scaffold template
         shell: bash
+        env:
+          SKIP_GUI_TESTS: "1"
         run: |
           AW_FORCE_ROOT=1 bash templates/scaffold.sh init "${{ matrix.template }}" --name ci_check --ns aw::ci
           bash templates/scaffold.sh eject
@@ -165,12 +167,15 @@ jobs:
   windows-msvc:
     name: Windows MSVC (all templates)
     runs-on: windows-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@main
 
       - name: Setup MSVC environment
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Run selftest on MSVC
+      - name: Run selftest on MSVC (skip GUI)
         shell: bash
+        env:
+          SKIP_GUI_TESTS: "1"
         run: bash templates/selftest.sh
