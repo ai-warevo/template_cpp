@@ -34,13 +34,17 @@ RUN echo 'deb https://deb.debian.org/debian forky main' > /etc/apt/sources.list.
         clang-tidy-18 \
         cmake \
         gdb \
+        gperf \
         git \
+        libssl-dev \
         lld-18 \
         libc++-18-dev \
         libc++abi-18-dev \
         libunwind-18-dev \
         libclang-rt-18-dev \
-        ninja-build && \
+        ninja-build \
+        qrencode \
+        zlib1g-dev && \
     apt-get update && \
     # gcc-15 and matching gcovr from forky (unstable)
     apt-get install -y --no-install-recommends -t forky \
@@ -59,23 +63,41 @@ RUN echo 'deb https://deb.debian.org/debian forky main' > /etc/apt/sources.list.
 ENV AW_DEPS_DIR=/opt/deps
 RUN mkdir -p /opt/deps/src && \
     cd /opt/deps/src && \
-    # Catch2 v3
-    git clone --branch v3.5.0 --depth 1 https://github.com/catchorg/Catch2.git && \
+    # Catch2 v3.6.0 (used by template_cpp, spoofiq)
+    git clone --branch v3.6.0 --depth 1 https://github.com/catchorg/Catch2.git && \
     cd Catch2 && mkdir build && cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps -DBUILD_TESTING=OFF && \
     cmake --build . --parallel && cmake --install . && \
     cd /opt/deps/src && rm -rf Catch2 && \
-    # spdlog
-    git clone --branch v1.12.0 --depth 1 https://github.com/gabime/spdlog.git && \
+    # spdlog v1.14.1 (used by gitsync, spoofiq)
+    git clone --branch v1.14.1 --depth 1 https://github.com/gabime/spdlog.git && \
     cd spdlog && mkdir build && cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps -DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_EXAMPLE=OFF && \
     cmake --build . --parallel && cmake --install . && \
     cd /opt/deps/src && rm -rf spdlog && \
-    # nlohmann/json
+    # nlohmann/json v3.11.3 (used by gitsync, tobus, spoofiq)
     git clone --branch v3.11.3 --depth 1 https://github.com/nlohmann/json.git && \
     cd json && mkdir build && cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps -DJSON_BuildTests=OFF && \
     cmake --build . --parallel && cmake --install . && \
     cd /opt/deps/src && rm -rf json && \
+    # STB (header-only image library, used by spoofiq)
+    git clone --depth 1 https://github.com/nothings/stb.git && \
+    mkdir -p /opt/deps/include/stb && \
+    cp stb/*.h /opt/deps/include/stb/ && \
+    rm -rf stb && \
+    # fmt v11 (optional, modern C++ formatting library)
+    git clone --branch 11.0.2 --depth 1 https://github.com/fmtlib/fmt.git && \
+    cd fmt && mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps -DFMT_TEST=OFF && \
+    cmake --build . --parallel && cmake --install . && \
+    cd /opt/deps/src && rm -rf fmt && \
+    # TDLib (Telegram Database Library, for future Telegram app)
+    git clone --depth 1 https://github.com/tdlib/td.git && \
+    cd td && mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps \
+        -DTDLIB_SHARED=OFF -DBUILD_SHARED_LIBS=OFF -DTD_CLI=OFF && \
+    cmake --build . --parallel --target install && \
+    cd /opt/deps/src && rm -rf td && \
     # Cleanup
     cd / && rm -rf /opt/deps/src

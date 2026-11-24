@@ -58,18 +58,16 @@ function(aw_test_target)
         message(FATAL_ERROR "aw_test_target() requires LINK_TARGET argument")
     endif()
 
-    # --- Catch2 v3 ---
-    include(FetchContent)
-    find_package(Catch2 3 QUIET)
-    if(NOT Catch2_FOUND)
-        FetchContent_Declare(Catch2
-            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-            GIT_TAG        v3.7.1
-            GIT_SHALLOW    TRUE
-            SYSTEM          TRUE)
-        FetchContent_MakeAvailable(Catch2)
-        list(APPEND CMAKE_MODULE_PATH "${catch2_SOURCE_DIR}/extras")
-    endif()
+    # --- Catch2 v3 (use enhanced dependency resolution) ---
+    include(DependencyCache)
+    aw_fetch_dependency(
+        NAME Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG v3.7.1
+        OPTIONS
+            BUILD_TESTING OFF
+            CATCH_INSTALL_DOCS OFF)
+    list(APPEND CMAKE_MODULE_PATH "${Catch2_SOURCE_DIR}/extras" "${catch2_SOURCE_DIR}/extras")
     include(Catch)
 
     # --- Test executable ---

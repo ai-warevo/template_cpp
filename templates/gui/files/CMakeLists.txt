@@ -18,56 +18,54 @@ find_package(Threads REQUIRED)
 find_package(OpenGL REQUIRED)
 aw_check_cxx23_runtime()
 
+include(DependencyCache)
+
 # ── Dependencies ──────────────────────────────────────────────────────────────
-# aw::tpl (TPL: Task Parallel Library)
+# aw::tpl (TPL: Task Parallel Library) - check parent directory first
 if(NOT TARGET aw::tpl)
-    FetchContent_Declare(
-        aw_tpl
+    aw_fetch_dependency(
+        NAME aw_tpl
         GIT_REPOSITORY https://github.com/ai-warevo/tpl.git
         GIT_TAG v3.1.0
-        GIT_SHALLOW ON)
-    set(AW_TPL_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-    set(AW_TPL_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(AW_TPL_INSTALL OFF CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(aw_tpl)
+        OPTIONS
+            AW_TPL_BUILD_TESTS OFF
+            AW_TPL_BUILD_EXAMPLES OFF
+            AW_TPL_INSTALL OFF)
 endif()
 
-# aw::tobus (Event Bus)
+# aw::tobus (Event Bus) - check parent directory first
 if(NOT TARGET aw::tobus)
-    FetchContent_Declare(
-        aw_tobus
+    aw_fetch_dependency(
+        NAME aw_tobus
         GIT_REPOSITORY https://github.com/ai-warevo/tobus.git
         GIT_TAG main
-        GIT_SHALLOW ON)
-    set(TOBUS_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-    set(TOBUS_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(TOBUS_INSTALL OFF CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(aw_tobus)
+        OPTIONS
+            TOBUS_BUILD_TESTS OFF
+            TOBUS_BUILD_EXAMPLES OFF
+            TOBUS_INSTALL OFF)
 endif()
 
 # GLFW (windowing + input)
 if(NOT TARGET glfw)
-    FetchContent_Declare(
-        glfw
+    aw_fetch_dependency(
+        NAME glfw
         GIT_REPOSITORY https://github.com/glfw/glfw.git
         GIT_TAG 3.4
-        GIT_SHALLOW ON)
-    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-    set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(GLFW_BUILD_WAYLAND OFF CACHE BOOL "" FORCE)
-    set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(glfw)
+        OPTIONS
+            GLFW_BUILD_DOCS OFF
+            GLFW_BUILD_TESTS OFF
+            GLFW_BUILD_EXAMPLES OFF
+            GLFW_BUILD_WAYLAND OFF
+            GLFW_INSTALL OFF)
 endif()
 
 # Dear ImGui (docking branch) - as static library with backends
 if(NOT TARGET imgui)
-    FetchContent_Declare(
-        imgui
+    aw_fetch_dependency(
+        NAME imgui
         GIT_REPOSITORY https://github.com/ocornut/imgui.git
-        GIT_TAG v1.91.8-docking
-        GIT_SHALLOW ON)
-    FetchContent_MakeAvailable(imgui)
+        GIT_TAG v1.91.8-docking)
+
 
     add_library(imgui STATIC
         ${imgui_SOURCE_DIR}/imgui.cpp
