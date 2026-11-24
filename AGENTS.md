@@ -9,7 +9,7 @@ This repository is a `dotnet new`-style C++23 project generator. The root stays 
 - `Makefile` is a thin wrapper for the generator and generated-project build targets.
 - `templates/scaffold.sh` owns generator behavior (`list`, `init`, `eject`) and must remain compatible with Bash 3.2+.
 - `templates/selftest.sh` generates each template, builds it, runs tests, and checks generator invariants.
-- `templates/<type>/template.conf` is sourced in a subshell; only `DESCRIPTION` and space-separated `ALIASES` are read.
+- `templates/<type>/template.conf` is sourced in a subshell; only  `DESCRIPTION` and space-separated `ALIASES` are read.
 - `templates/<type>/files/` mirrors a generated project. Its top-level entries must remain in `MANAGED` in `scaffold.sh`.
 - `SHARED_FILES` in `scaffold.sh` lists root files copied as-is into generated projects. Do not add release or CI implementation scripts there.
 - There is no `templates/_common/`; templates are self-contained by design.
