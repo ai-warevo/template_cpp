@@ -9,7 +9,7 @@
 <br />
 [![Selftest](https://github.com/ai-warevo/template_cpp/actions/workflows/selftest.yml/badge.svg)](https://github.com/ai-warevo/template_cpp/actions/workflows/selftest.yml)
 [![ShellCheck](https://github.com/ai-warevo/template_cpp/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/ai-warevo/template_cpp/actions/workflows/shellcheck.yml)
-<br />
+<br /> 
 [![PR Build](https://github.com/ai-warevo/template_cpp/actions/workflows/pr-build.yml/badge.svg)](https://github.com/ai-warevo/template_cpp/actions/workflows/pr-build.yml)
 [![PR Test](https://github.com/ai-warevo/template_cpp/actions/workflows/pr-test.yml/badge.svg)](https://github.com/ai-warevo/template_cpp/actions/workflows/pr-test.yml)
 <br />
