@@ -13,7 +13,7 @@
 [![PR Build](https://github.com/ai-warevo/template_cpp/actions/workflows/pr-build.yml/badge.svg)](https://github.com/ai-warevo/template_cpp/actions/workflows/pr-build.yml)
 [![PR Test](https://github.com/ai-warevo/template_cpp/actions/workflows/pr-test.yml/badge.svg)](https://github.com/ai-warevo/template_cpp/actions/workflows/pr-test.yml)
 <br />
-[![Weekly Deep](https://github.com/ai-warevo/template_cpp/actions/workflows/weekly-deep.yml/badge.svg)](https://github.com/ai-warevo/template_cpp/actions/workflows/weekly-deep.yml)
+[![Weekly Deep](https://github.com/ai-warevo/template _cpp/actions/workflows/weekly-deep.yml/badge.svg)](https://github.com/ai-warevo/template_cpp/actions/workflows/weekly-deep.yml)
 [![Release](https://github.com/ai-warevo/template_cpp/actions/workflows/release.yml/badge.svg)](https://github.com/ai-warevo/template_cpp/actions/workflows/release.yml)
 
 The repository root stays clean. `CMakeLists.txt`, `src/`, `include/`, `tests/` and (for some templates) `examples/` appear only after `make init`.
