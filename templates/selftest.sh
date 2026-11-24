@@ -81,7 +81,7 @@ if [ $# -gt 0 ]; then TYPES="$*"; else TYPES=$($SCAFFOLD list | grep -v '(intern
 
 # Filter out GUI template if SKIP_GUI_TESTS is set (e.g., Windows, TSan without graphics)
 if [ "${SKIP_GUI_TESTS:-0}" = "1" ]; then
-    TYPES=$(printf '%s\n' $TYPES | grep -v '^gui$' | paste -sd' ' -)
+    TYPES=$(printf '%s\n' "$TYPES" | grep -v '^gui$' | paste -sd' ' -)
 fi
 
 section "generator checks"
