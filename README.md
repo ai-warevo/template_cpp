@@ -63,6 +63,7 @@ make init TYPE=<type> [NAME=<name>] [NS=<namespace>] [OUT=<dir>] [TESTS=0] [DRY=
 | `OUT`   | repository root       | Directory to generate into (must exist). `make init … --out DIR` does **not** work: make eats the flag. |
 | `TESTS` | `1`                   | `TESTS=0` skips `tests/` and the Catch2 `FetchContent` setup.                                        |
 | `DRY`   | `0`                   | `DRY=1` prints the files that would be generated and writes nothing.                                 |
+| `gui`     | `ui`, `window`, `desktop` | Cross-platform GUI app + embeddable overlay (GLFW + Dear ImGui docking + event bus) |
 
 Re-running `make init` **overwrites** `CMakeLists.txt`, `src/`, `include/` and `tests/` without asking, and prints a warning that lists them.
 Rendering happens in a staging directory first, so a validation error never leaves a half-generated project.
