@@ -31,7 +31,8 @@ RUN mkdir -p /opt/deps/src && \
     git clone --branch 3.4 --depth 1 https://github.com/glfw/glfw.git && \
     cd glfw && mkdir build && cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps \
-        -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF && \
+        -DGLFW_BUILD_DOCS=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_EXAMPLES=OFF \
+        -DGLFW_BUILD_WAYLAND=OFF && \
     cmake --build . --parallel && cmake --install . && \
     cd /opt/deps/src && rm -rf glfw && \
     # Dear ImGui (docking branch) - headers only, no CMake target needed

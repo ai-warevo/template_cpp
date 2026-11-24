@@ -44,7 +44,7 @@ jobs:
     needs: discover
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/ai-warevo/ci-cpp23
+      image: ghcr.io/ai-warevo/ci-cpp23-gui
       options: --user root
     strategy:
       fail-fast: false
@@ -53,8 +53,10 @@ jobs:
     steps:
       - uses: actions/checkout@main
 
-      # 1. Selftest (scaffold + GCC Debug + CTest + edge cases)
+      # 1. Selftest (scaffold + GCC Debug + CTest + Xvfb for gui)
       - name: Selftest
+        env:
+          DISPLAY: :99
         run: bash templates/selftest.sh "${{ matrix.template }}"
 
       # 2. Scaffold template into workspace & eject templates/
@@ -80,6 +82,8 @@ jobs:
           sanitizer: address
 
       - name: Configure & Build (Clang + ASan/UBSan)
+        env:
+          DISPLAY: :99
         uses: ai-warevo/.github/.github/actions/cmake-build@main
         with:
           source_dir: .
@@ -88,6 +92,8 @@ jobs:
           extra_args: "${{ steps.tc.outputs.cmake_args }} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
 
       - name: Run Tests (Clang + ASan/UBSan)
+        env:
+          DISPLAY: :99
         uses: ai-warevo/.github/.github/actions/ctest-run@main
         with:
           source_dir: .
@@ -103,9 +109,9 @@ jobs:
           build_dir: build
           header_filter: '.*/(include|src)/.*'
 
-      # 6. Build & Test (GCC + ThreadSanitizer)
   # ────────────────────────────────────────────────────────────
-  # TSan needs host ASLR settings that are unavailable inside the CI container.
+  # TSan — test with ThreadSanitizer (GCC, host ASLR required)
+  # ────────────────────────────────────────────────────────────
   template-tsan:
     name: Template TSan — ${{ matrix.template }}
     needs: discover
