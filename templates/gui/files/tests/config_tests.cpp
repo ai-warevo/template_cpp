@@ -8,7 +8,6 @@ namespace fs = std::filesystem;
 TEST_CASE("Config save and load round-trip", "[config]") {
     const auto temp_path = fs::temp_directory_path() / "@@NAME@@_test_config.txt";
 
-    // Create test state
     @@NS@@::AppState original;
     original.window_width = 1920;
     original.window_height = 1080;
@@ -18,16 +17,13 @@ TEST_CASE("Config save and load round-trip", "[config]") {
     original.dark_mode = true;
     original.overlay_scale = 1.5f;
 
-    // Save and load
     REQUIRE(@@NS@@::Config::save(temp_path.string(), original));
 
     @@NS@@::AppState loaded;
     REQUIRE(@@NS@@::Config::load(temp_path.string(), loaded));
 
-    // Verify
     CHECK(loaded == original);
 
-    // Cleanup
     fs::remove(temp_path);
 }
 

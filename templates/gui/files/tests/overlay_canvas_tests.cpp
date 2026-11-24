@@ -6,7 +6,6 @@ TEST_CASE("OverlayCanvas pushes and stores commands", "[overlay_canvas]") {
 
     REQUIRE(canvas.commands().empty());
 
-    // Push various draw commands
     @@NS@@::DrawCommand line_cmd;
     line_cmd.type = @@NS@@::DrawType::Line;
     line_cmd.x1 = 10.0f;
