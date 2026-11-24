@@ -52,6 +52,9 @@ jobs:
       - uses: actions/checkout@main
 
       # 1. Selftest (scaffold + GCC Debug + CTest + Xvfb for gui)
+      - name: Start Xvfb for headless GUI testing
+        run: Xvfb :99 -screen 0 1024x768x24 &
+
       - name: Selftest
         env:
           DISPLAY: :99
@@ -167,7 +170,7 @@ jobs:
   windows-msvc:
     name: Windows MSVC (all templates)
     runs-on: windows-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@main
 
