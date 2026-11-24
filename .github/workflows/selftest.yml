@@ -33,7 +33,7 @@ jobs:
       - id: find
         shell: bash
         run: |
-          list=$(bash templates/scaffold.sh list | sed -n 's/^  \([^ ]*\) .*/"\1"/p' | paste -sd, -)
+          list=$(bash templates/scaffold.sh list | grep -v '(internal:' | sed -n 's/^  \([^ ]*\) .*/"\1"/p' | paste -sd, -)
           echo "templates=[$list]" >> "$GITHUB_OUTPUT"
 
   # ────────────────────────────────────────────────────────────

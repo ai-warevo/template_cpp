@@ -200,6 +200,7 @@ cmd_init() {
     fi
     out=$(cd "$out" && pwd)
     case $out/ in "$TPL_DIR"/*) die "refusing to generate inside templates/" ;; esac
+    [ "$out" != "$ROOT_DIR" ] || die "refusing to generate into the template generator repository; pass --out DIR to target a separate directory"
 
     if [ -z "$name" ]; then
         name=$(infer_name "$out")
