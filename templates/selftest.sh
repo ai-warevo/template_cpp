@@ -16,7 +16,8 @@ _timer_start() {
     _TIMER_START=$(date +%s%N)
 }
 _timer_elapsed() {
-    local end=$(date +%s%N)
+    local end
+    end=$(date +%s%N)
     local elapsed=$(( (end - _TIMER_START) / 1000000 ))
     printf '%d.%03ds' $((elapsed / 1000)) $((elapsed % 1000))
 }
