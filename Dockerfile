@@ -69,7 +69,7 @@ RUN mkdir -p /opt/deps/src && \
     cd Catch2 && mkdir build && cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps -DBUILD_TESTING=OFF && \
     cmake --build . --parallel && cmake --install . && \
-    cd /opt/deps/src && rm -rf Catch2 && \
+    cd /opt/deps/src && \
     # spdlog v1.14.1 (used by gitsync, spoofiq)
     git clone --branch v1.14.1 --depth 1 https://github.com/gabime/spdlog.git && \
     cd spdlog && mkdir build && cd build && \
