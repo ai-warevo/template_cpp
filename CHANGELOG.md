@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!--
-Maintainer notes (see AGENTS.md, "Changelog and releases"):
+Maintainer notes (see AGENTS.md, "Changelog and  releases"):
 - Add every user-visible change under `## [Unreleased]` in the same commit that makes it.
 - Categories: Breaking, Added, Changed, Deprecated, Removed, Fixed, Security. Omit empty ones.
 - The GitHub Actions Release workflow uses shared catalog actions to prepare releases.
