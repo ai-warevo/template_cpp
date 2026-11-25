@@ -19,6 +19,7 @@
 
 FROM debian:trixie
 
+ENV TZ=Asia/Krasnoyarsk
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Add forky (unstable) repo with low priority so it doesn't override trixie packages.
