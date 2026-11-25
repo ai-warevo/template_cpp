@@ -4,7 +4,7 @@
 # Calls: reusable-matrix.yml from ai-warevo/.github
 #
 # This workflow runs a fast Debug unit test suite on the generated CI project
-# across the primary toolchains (clang-18/libc++ and gcc-15).
+# across all Linux toolchains (gcc-15, clang-18-libstdc, clang-18-libcxx).
 
 name: PR Test
 
@@ -25,8 +25,6 @@ jobs:
     with:
       source_dir: .ci-project
       build_dir: build
-      container_image: ghcr.io/ai-warevo/ci-cpp23
-      linux_toolchains: '["clang18-libcxx", "gcc15"]'
       build_types: '["Debug"]'
       enable_windows: false
       cmake_extra_args_linux: >-
