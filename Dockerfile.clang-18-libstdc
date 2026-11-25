@@ -14,11 +14,12 @@ FROM ${BASE_IMAGE}
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install clang-18, lld-18 (libstdc++ already in base via build-essential)
+# Install clang-18, lld-18, and compiler-rt for sanitizers (libstdc++ already in base via build-essential)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         clang-18 \
-        lld-18 && \
+        lld-18 \
+        libclang-rt-18-dev && \
     rm -rf /var/lib/apt/lists/* && \
     clang++-18 --version
 
