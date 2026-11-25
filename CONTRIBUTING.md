@@ -12,7 +12,7 @@ Be respectful, inclusive, and constructive. Harassment or discrimination of any 
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes following `AGENTS.md`
 4. Commit using [Conventional Commits](https://www.conventionalcommits.org/)
-5. Push to the branch (`git push origin feature/amazing-feature`)
+5. Push to the branch (`git push origin feature/amazing-feature`) 
 6. Open a Pull Request
 
 ## Development workflow
