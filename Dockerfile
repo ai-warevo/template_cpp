@@ -29,6 +29,7 @@ RUN echo 'deb https://deb.debian.org/debian forky main' > /etc/apt/sources.list.
     apt-get install -y --no-install-recommends \
         build-essential \
         ca-certificates \
+        ccache \
         clang-18 \
         clang-format-18 \
         clang-tidy-18 \
@@ -95,9 +96,10 @@ RUN mkdir -p /opt/deps/src && \
     # TDLib (Telegram Database Library, for future Telegram app)
     git clone --depth 1 https://github.com/tdlib/td.git && \
     cd td && mkdir build && cd build && \
+    CXXFLAGS="-stdlib=libc++" CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps \
-        -DTDLIB_SHARED=OFF -DBUILD_SHARED_LIBS=OFF -DTD_CLI=OFF && \
-    cmake --build . --parallel --target install && \
+        -DTD_ENABLE_LTO=ON -DTD_ENABLE_PCH=ON && \
+    cmake --build . -j$(nproc) --target install && \
     cd /opt/deps/src && rm -rf td && \
     # Cleanup
     cd / && rm -rf /opt/deps/src
