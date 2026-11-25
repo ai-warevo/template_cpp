@@ -6,17 +6,21 @@
 #   1. FETCHCONTENT_SOURCE_DIR_<NAME> (explicit override)
 #   2. ../<NAME> (parent directory - monorepo)
 #   3. build/_deps (local build cache from prior fetches)
-#   4. /opt/deps (Docker pre-compiled stable)
+#   4. /opt/deps/<toolchain>/ (Docker pre-compiled, ABI-matched)
 #   5. find_package() (system install)
 #   6. FetchContent (GitHub fallback)
 #
 # EXTERNAL LIBRARIES (Catch2, spdlog, etc.):
 #   1. FETCHCONTENT_SOURCE_DIR_<NAME> (explicit override)
 #   2. build/_deps (local build cache)
-#   3. /opt/deps (Docker pre-compiled stable)
-#   4. $ENV{AW_DEPS_DIR} (user-defined cache)
-#   5. find_package() (system install)
-#   6. FetchContent (network fallback)
+#   3. /opt/deps/<toolchain>/ (Docker pre-compiled, ABI-matched)
+#      - gcc-15: /opt/deps/gcc-15/
+#      - clang-18 libstdc++: /opt/deps/clang-18-libstdc/
+#      - clang-18 libc++: /opt/deps/clang-18-libc++/
+#   4. /opt/deps/include (header-only: json, stb)
+#   5. $ENV{AW_DEPS_DIR} (user-defined cache)
+#   6. find_package() (system install)
+#   7. FetchContent (network fallback)
 #
 # Usage:
 #   aw_fetch_dependency(
@@ -78,10 +82,33 @@ function(aw_fetch_dependency)
         return()
     endif()
 
-    # 4. Check /opt/deps (Docker pre-compiled stable deps)
-    if(EXISTS "/opt/deps/lib/cmake/${_DEP_NAME}")
+    # 4. Check /opt/deps/<toolchain> (Docker pre-compiled deps, ABI-matched)
+    # Detect toolchain and stdlib to select correct cache directory
+    set(_DEPS_VARIANT "")
+    
+    if(CMAKE_CXX_FLAGS MATCHES "stdlib=libc\\+\\+")
+        # Using libc++
+        set(_DEPS_VARIANT "clang-18-libc++")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        # clang-18 with libstdc++ (default)
+        set(_DEPS_VARIANT "clang-18-libstdc")
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        # gcc-15 with libstdc++
+        set(_DEPS_VARIANT "gcc-15")
+    endif()
+    
+    if(_DEPS_VARIANT)
+        set(_DEPS_DIR "/opt/deps/${_DEPS_VARIANT}")
+        if(EXISTS "${_DEPS_DIR}/lib/cmake/${_DEP_NAME}")
+            list(PREPEND CMAKE_PREFIX_PATH "${_DEPS_DIR}")
+            message(STATUS "Found ${_DEP_NAME} in ${_DEPS_DIR} (Docker ${_DEPS_VARIANT} cache)")
+        endif()
+    endif()
+    
+    # Header-only deps in shared /opt/deps/include
+    if(EXISTS "/opt/deps/include")
         list(PREPEND CMAKE_PREFIX_PATH "/opt/deps")
-        message(STATUS "Found ${_DEP_NAME} in /opt/deps (Docker cache)")
+        # Note: CMAKE_PREFIX_PATH now includes both toolchain-specific and shared header dirs
     endif()
 
     # 5. Check $ENV{AW_DEPS_DIR} (user-defined cache directory)
@@ -96,8 +123,11 @@ function(aw_fetch_dependency)
         message(STATUS "Using system ${_DEP_NAME}")
         # Try to find SOURCE_DIR from the found package (some packages export it)
         if(NOT DEFINED ${_DEP_NAME}_SOURCE_DIR)
-            # Fallback: check Docker cache directory
-            if(EXISTS "/opt/deps/src/${_DEP_NAME}")
+            # Fallback: check Docker cache directory (toolchain-specific or shared)
+            if(_DEPS_VARIANT AND EXISTS "/opt/deps/${_DEPS_VARIANT}/src/${_DEP_NAME}")
+                set(${_DEP_NAME}_SOURCE_DIR "/opt/deps/${_DEPS_VARIANT}/src/${_DEP_NAME}" PARENT_SCOPE)
+                message(STATUS "Set ${_DEP_NAME}_SOURCE_DIR to /opt/deps/${_DEPS_VARIANT}/src/${_DEP_NAME}")
+            elseif(EXISTS "/opt/deps/src/${_DEP_NAME}")
                 set(${_DEP_NAME}_SOURCE_DIR "/opt/deps/src/${_DEP_NAME}" PARENT_SCOPE)
                 message(STATUS "Set ${_DEP_NAME}_SOURCE_DIR to /opt/deps/src/${_DEP_NAME}")
             endif()

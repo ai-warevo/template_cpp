@@ -1,0 +1,63 @@
+# syntax=docker/dockerfile:1.7
+#
+# CI image for C++23 with gcc-15 (libstdc++)
+# Inherits from: ghcr.io/ai-warevo/ci-cpp23:base
+#
+# Toolchain: gcc-15 (libstdc++ default)
+# Dependencies: spdlog v1.14.1, Catch2 v3.6.0, fmt v11.0.2
+# Installed to: /opt/deps/gcc-15/
+#
+# Pushed to ghcr.io/ai-warevo/ci-cpp23:gcc-15
+
+ARG BASE_IMAGE=ghcr.io/ai-warevo/ci-cpp23:base
+FROM ${BASE_IMAGE}
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install gcc-15 and gcovr
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends -t forky \
+        gcc-15 \
+        g++-15 \
+        gcovr && \
+    rm -rf /var/lib/apt/lists/* && \
+    ln -sf /usr/bin/gcc-15 /usr/bin/gcc && \
+    ln -sf /usr/bin/g++-15 /usr/bin/g++ && \
+    g++-15 --version
+
+# Pre-populate dependencies: Catch2, spdlog, fmt (libstdc++)
+# Header-only: nlohmann/json, STB
+RUN mkdir -p /opt/deps/gcc-15/src && \
+    cd /opt/deps/gcc-15/src && \
+    # Catch2 v3.6.0 (libstdc++)
+    git clone --branch v3.6.0 --depth 1 https://github.com/catchorg/Catch2.git && \
+    cd Catch2 && mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/gcc-15 -DBUILD_TESTING=OFF && \
+    cmake --build . --parallel && cmake --install . && \
+    echo 'set(Catch2_SOURCE_DIR "/opt/deps/gcc-15/src/Catch2")' >> /opt/deps/gcc-15/lib/cmake/Catch2/Catch2Config.cmake && \
+    cd /opt/deps/gcc-15/src && \
+    # spdlog v1.14.1 (libstdc++)
+    git clone --branch v1.14.1 --depth 1 https://github.com/gabime/spdlog.git && \
+    cd spdlog && mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/gcc-15 -DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_EXAMPLE=OFF && \
+    cmake --build . --parallel && cmake --install . && \
+    cd /opt/deps/gcc-15/src && rm -rf spdlog && \
+    # fmt v11.0.2 (libstdc++)
+    git clone --branch 11.0.2 --depth 1 https://github.com/fmtlib/fmt.git && \
+    cd fmt && mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/gcc-15 -DFMT_TEST=OFF && \
+    cmake --build . --parallel && cmake --install . && \
+    cd /opt/deps/gcc-15/src && rm -rf fmt
+
+# Install header-only deps to /opt/deps/include (shared)
+RUN mkdir -p /opt/deps/include && \
+    cd /tmp && \
+    # nlohmann/json v3.11.3
+    git clone --branch v3.11.3 --depth 1 https://github.com/nlohmann/json.git && \
+    cp -r json/include/nlohmann /opt/deps/include/ && \
+    rm -rf json && \
+    # STB
+    git clone --depth 1 https://github.com/nothings/stb.git && \
+    mkdir -p /opt/deps/include/stb && \
+    cp stb/*.h /opt/deps/include/stb/ && \
+    rm -rf stb

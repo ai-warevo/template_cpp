@@ -1,0 +1,74 @@
+# syntax=docker/dockerfile:1.7
+#
+# CI image for C++23 with clang-18 (libc++)
+# Inherits from: ghcr.io/ai-warevo/ci-cpp23:base
+#
+# Toolchain: clang-18 -stdlib=libc++
+# Dependencies: spdlog v1.14.1, Catch2 v3.6.0, fmt v11.0.2, TDLib
+# Installed to: /opt/deps/clang-18-libc++/
+#
+# Pushed to ghcr.io/ai-warevo/ci-cpp23:clang-18-libc++
+
+ARG BASE_IMAGE=ghcr.io/ai-warevo/ci-cpp23:base
+FROM ${BASE_IMAGE}
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install clang-18, lld-18, and libc++ development files
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        clang-18 \
+        lld-18 \
+        libc++-18-dev \
+        libc++abi-18-dev \
+        libunwind-18-dev \
+        libclang-rt-18-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    clang++-18 --version
+
+# Pre-populate dependencies: Catch2, spdlog, fmt, TDLib (all with libc++)
+RUN mkdir -p /opt/deps/clang-18-libc++/src && \
+    cd /opt/deps/clang-18-libc++/src && \
+    # Catch2 v3.6.0 (libc++)
+    git clone --branch v3.6.0 --depth 1 https://github.com/catchorg/Catch2.git && \
+    cd Catch2 && mkdir build && cd build && \
+    CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 CXXFLAGS="-stdlib=libc++" \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libc++ -DBUILD_TESTING=OFF && \
+    cmake --build . --parallel && cmake --install . && \
+    echo 'set(Catch2_SOURCE_DIR "/opt/deps/clang-18-libc++/src/Catch2")' >> /opt/deps/clang-18-libc++/lib/cmake/Catch2/Catch2Config.cmake && \
+    cd /opt/deps/clang-18-libc++/src && \
+    # spdlog v1.14.1 (libc++)
+    git clone --branch v1.14.1 --depth 1 https://github.com/gabime/spdlog.git && \
+    cd spdlog && mkdir build && cd build && \
+    CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 CXXFLAGS="-stdlib=libc++" \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libc++ -DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_EXAMPLE=OFF && \
+    cmake --build . --parallel && cmake --install . && \
+    cd /opt/deps/clang-18-libc++/src && rm -rf spdlog && \
+    # fmt v11.0.2 (libc++)
+    git clone --branch 11.0.2 --depth 1 https://github.com/fmtlib/fmt.git && \
+    cd fmt && mkdir build && cd build && \
+    CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 CXXFLAGS="-stdlib=libc++" \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libc++ -DFMT_TEST=OFF && \
+    cmake --build . --parallel && cmake --install . && \
+    cd /opt/deps/clang-18-libc++/src && rm -rf fmt && \
+    # TDLib (libc++)
+    git clone --depth 1 https://github.com/tdlib/td.git && \
+    cd td && mkdir build && cd build && \
+    CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 CXXFLAGS="-stdlib=libc++" \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libc++ \
+        -DTD_ENABLE_LTO=ON -DTD_ENABLE_PCH=ON && \
+    cmake --build . -j$(nproc) --target install && \
+    cd /opt/deps/clang-18-libc++/src && rm -rf td
+
+# Install header-only deps to /opt/deps/include (shared)
+RUN mkdir -p /opt/deps/include && \
+    cd /tmp && \
+    # nlohmann/json v3.11.3
+    git clone --branch v3.11.3 --depth 1 https://github.com/nlohmann/json.git && \
+    cp -r json/include/nlohmann /opt/deps/include/ && \
+    rm -rf json && \
+    # STB
+    git clone --depth 1 https://github.com/nothings/stb.git && \
+    mkdir -p /opt/deps/include/stb && \
+    cp stb/*.h /opt/deps/include/stb/ && \
+    rm -rf stb

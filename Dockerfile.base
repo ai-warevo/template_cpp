@@ -1,0 +1,38 @@
+# syntax=docker/dockerfile:1.7
+#
+# Base CI image for C++23 projects.
+# Contains: cmake, ninja, git, build essentials, SSL/zlib, ccache.
+# No toolchains (added in child images).
+#
+# Pushed to ghcr.io/ai-warevo/ci-cpp23:base
+
+FROM debian:trixie
+
+ENV TZ=Asia/Krasnoyarsk
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Add forky (unstable) repo with low priority
+RUN echo 'deb https://deb.debian.org/debian forky main' > /etc/apt/sources.list.d/forky.list && \
+    printf 'Package: *\nPin: release n=forky\nPin-Priority: 100\n' > /etc/apt/preferences.d/forky && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        ca-certificates \
+        ccache \
+        clang-format-18 \
+        clang-tidy-18 \
+        cmake \
+        gdb \
+        gperf \
+        git \
+        libssl-dev \
+        ninja-build \
+        qrencode \
+        zlib1g-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    ln -sf /usr/bin/clang-tidy-18 /usr/bin/clang-tidy && \
+    ln -sf /usr/bin/clang-format-18 /usr/bin/clang-format && \
+    cmake --version && \
+    ninja --version
+
+ENV AW_DEPS_DIR=/opt/deps

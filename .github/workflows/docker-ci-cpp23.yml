@@ -1,4 +1,4 @@
-name: Build & Push CI Docker Image
+name: Build & Push CI Docker Images
 
 on:
   workflow_dispatch:
@@ -16,8 +16,8 @@ permissions:
   packages: write
 
 jobs:
-  build-test-push:
-    name: Build, Test & Push CI Image
+  build-base:
+    name: Build Base Image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,64 +26,85 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Build image for testing (locally)
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          load: true
-          tags: ci-cpp23:test
-          cache-from: type=gha
-
-      - name: Verify toolchain versions
-        run: |
-          echo "=== g++ ==="
-          docker run --rm ci-cpp23:test g++ --version | head -1
-          echo "=== clang++-18 ==="
-          docker run --rm ci-cpp23:test clang++-18 --version | head -1
-          echo "=== cmake ==="
-          docker run --rm ci-cpp23:test cmake --version | head -1
-          echo "=== ninja ==="
-          docker run --rm ci-cpp23:test ninja --version
-          echo "=== clang-tidy ==="
-          docker run --rm ci-cpp23:test clang-tidy --version | head -1
-          echo "=== clang-format ==="
-          docker run --rm ci-cpp23:test clang-format --version | head -1
-          echo "=== gcovr ==="
-          docker run --rm ci-cpp23:test gcovr --version
-
-      - name: Run selftest inside container
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/workspace:rw" ci-cpp23:test bash -c '
-            cd /workspace && \
-            bash templates/selftest.sh
-          '
-
-      - name: Log in to GHCR (if pushing)
-        if: success()
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (if pushing)
-        if: success()
+      - name: Extract metadata for base
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/ai-warevo/ci-cpp23
           tags: |
-            type=raw,value=${{ github.event.inputs.tag || 'latest' }}
-            type=raw,value={{date 'YYYYMMDD'}}-{{sha}}
+            type=raw,value=base
 
-      - name: Build and push to GHCR (reuses cache)
-        if: success()
+      - name: Build and push base image
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64
+          file: Dockerfile.base
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  build-variants:
+    name: Build ${{ matrix.variant }} Image
+    needs: build-base
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        variant: [gcc-15, clang-18-libstdc, clang-18-libc++]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for ${{ matrix.variant }}
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/ai-warevo/ci-cpp23
+          tags: |
+            type=raw,value=${{ matrix.variant }}
+            type=raw,value=${{ github.event.inputs.tag || 'latest' }},enable=${{ matrix.variant == 'gcc-15' }}
+
+      - name: Build and push ${{ matrix.variant }} image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.${{ matrix.variant }}
+          build-args: |
+            BASE_IMAGE=ghcr.io/ai-warevo/ci-cpp23:base
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  verify:
+    name: Verify Toolchain Versions
+    needs: build-variants
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        variant: [gcc-15, clang-18-libstdc, clang-18-libc++]
+    steps:
+      - name: Verify ${{ matrix.variant }}
+        run: |
+          echo "=== ${{ matrix.variant }} ===" 
+          docker run --rm ghcr.io/ai-warevo/ci-cpp23:${{ matrix.variant }} cmake --version | head -1
+          docker run --rm ghcr.io/ai-warevo/ci-cpp23:${{ matrix.variant }} ninja --version
