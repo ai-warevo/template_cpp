@@ -69,6 +69,7 @@ RUN mkdir -p /opt/deps/src && \
     cd Catch2 && mkdir build && cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps -DBUILD_TESTING=OFF && \
     cmake --build . --parallel && cmake --install . && \
+    echo 'set(Catch2_SOURCE_DIR "/opt/deps/src/Catch2")' >> /opt/deps/lib/cmake/Catch2/Catch2Config.cmake && \
     cd /opt/deps/src && \
     # spdlog v1.14.1 (used by gitsync, spoofiq)
     git clone --branch v1.14.1 --depth 1 https://github.com/gabime/spdlog.git && \
@@ -101,5 +102,5 @@ RUN mkdir -p /opt/deps/src && \
         -DTD_ENABLE_LTO=ON -DTD_ENABLE_PCH=ON && \
     cmake --build . -j$(nproc) --target install && \
     cd /opt/deps/src && rm -rf td && \
-    # Cleanup
-    cd / && rm -rf /opt/deps/src
+    # Cleanup: keep Catch2 sources for aw_test_target, remove others
+    cd / && rm -rf /opt/deps/src/spdlog /opt/deps/src/json /opt/deps/src/stb /opt/deps/src/fmt
