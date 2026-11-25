@@ -33,7 +33,6 @@ jobs:
           load: true
           tags: ci-cpp23:test
           cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Verify toolchain versions
         run: |
@@ -87,3 +86,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -11,7 +11,7 @@
 #       VERSION_MINOR 0
 #       VERSION_PATCH 0
 #       COMPANY_NAME "My Company"
-#       COMPANY_COPYRIGHT "Copyright 2024"
+#       COMPANY_COPYRIGHT "Copyright 2026"
 #       ICON "${CMAKE_SOURCE_DIR}/res/app.ico")
 #
 # Only works on Windows; silently returns on other platforms.

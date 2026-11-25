@@ -67,7 +67,7 @@ if(@@NAME_UPPER@@_BUILD_APP OR @@NAME_UPPER@@_BUILD_OVERLAY)
                 GLFW_BUILD_EXAMPLES OFF
                 GLFW_INSTALL OFF)
         endif()
-        
+
         aw_fetch_dependency(
             NAME glfw
             GIT_REPOSITORY https://github.com/glfw/glfw.git
@@ -146,7 +146,7 @@ if(@@NAME_UPPER@@_BUILD_APP)
             VERSION_MINOR ${PROJECT_VERSION_MINOR}
             VERSION_PATCH ${PROJECT_VERSION_PATCH}
             COMPANY_NAME "Your Company"
-            COMPANY_COPYRIGHT "Copyright 2024 Your Company"
+            COMPANY_COPYRIGHT "Copyright 2026 Your Company"
             FILE_DESCRIPTION "@@NAME@@ Application"
             COMMENTS "@@NAME@@ v${PROJECT_VERSION}"
             ORIGINAL_FILENAME "@@NAME@@.exe"
