@@ -41,8 +41,8 @@ RUN mkdir -p /opt/deps/src && \
     cp imgui/*.h imgui/*.cpp /opt/deps/include/imgui/ && \
     cp imgui/backends/imgui_impl_glfw.* imgui/backends/imgui_impl_opengl3.* /opt/deps/include/imgui/ && \
     rm -rf imgui && \
-    # Cleanup
-    cd / && rm -rf /opt/deps/src
+    # Cleanup: keep Catch2 from base image, remove only GUI sources
+    cd / && rm -rf /opt/deps/src/glfw
 
 # Set display for Xvfb headless testing
 ENV DISPLAY=:99
