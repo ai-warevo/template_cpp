@@ -5,9 +5,9 @@
 #
 # Toolchain: clang-18 -stdlib=libc++
 # Dependencies: spdlog v1.14.1, Catch2 v3.6.0, fmt v11.0.2, TDLib
-# Installed to: /opt/deps/clang-18-libc++/
+# Installed to: /opt/deps/clang-18-libcxx/
 #
-# Pushed to ghcr.io/ai-warevo/ci-cpp23:clang-18-libc++
+# Pushed to ghcr.io/ai-warevo/ci-cpp23:clang-18-libcxx
 
 ARG BASE_IMAGE=ghcr.io/ai-warevo/ci-cpp23:base
 FROM ${BASE_IMAGE}
@@ -27,38 +27,38 @@ RUN apt-get update && \
     clang++-18 --version
 
 # Pre-populate dependencies: Catch2, spdlog, fmt, TDLib (all with libc++)
-RUN mkdir -p /opt/deps/clang-18-libc++/src && \
-    cd /opt/deps/clang-18-libc++/src && \
+RUN mkdir -p /opt/deps/clang-18-libcxx/src && \
+    cd /opt/deps/clang-18-libcxx/src && \
     # Catch2 v3.6.0 (libc++)
     git clone --branch v3.6.0 --depth 1 https://github.com/catchorg/Catch2.git && \
     cd Catch2 && mkdir build && cd build && \
     CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 CXXFLAGS="-stdlib=libc++" \
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libc++ -DBUILD_TESTING=OFF && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libcxx -DBUILD_TESTING=OFF && \
     cmake --build . --parallel && cmake --install . && \
-    echo 'set(Catch2_SOURCE_DIR "/opt/deps/clang-18-libc++/src/Catch2")' >> /opt/deps/clang-18-libc++/lib/cmake/Catch2/Catch2Config.cmake && \
-    cd /opt/deps/clang-18-libc++/src && \
+    echo 'set(Catch2_SOURCE_DIR "/opt/deps/clang-18-libcxx/src/Catch2")' >> /opt/deps/clang-18-libcxx/lib/cmake/Catch2/Catch2Config.cmake && \
+    cd /opt/deps/clang-18-libcxx/src && \
     # spdlog v1.14.1 (libc++)
     git clone --branch v1.14.1 --depth 1 https://github.com/gabime/spdlog.git && \
     cd spdlog && mkdir build && cd build && \
     CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 CXXFLAGS="-stdlib=libc++" \
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libc++ -DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_EXAMPLE=OFF && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libcxx -DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_EXAMPLE=OFF && \
     cmake --build . --parallel && cmake --install . && \
-    cd /opt/deps/clang-18-libc++/src && rm -rf spdlog && \
+    cd /opt/deps/clang-18-libcxx/src && rm -rf spdlog && \
     # fmt v11.0.2 (libc++)
     git clone --branch 11.0.2 --depth 1 https://github.com/fmtlib/fmt.git && \
     cd fmt && mkdir build && cd build && \
     CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 CXXFLAGS="-stdlib=libc++" \
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libc++ -DFMT_TEST=OFF && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libcxx -DFMT_TEST=OFF && \
     cmake --build . --parallel && cmake --install . && \
-    cd /opt/deps/clang-18-libc++/src && rm -rf fmt && \
+    cd /opt/deps/clang-18-libcxx/src && rm -rf fmt && \
     # TDLib (libc++)
     git clone --depth 1 https://github.com/tdlib/td.git && \
     cd td && mkdir build && cd build && \
     CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 CXXFLAGS="-stdlib=libc++" \
-    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libc++ \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libcxx \
         -DTD_ENABLE_LTO=ON -DTD_ENABLE_PCH=ON && \
     cmake --build . -j$(nproc) --target install && \
-    cd /opt/deps/clang-18-libc++/src && rm -rf td
+    cd /opt/deps/clang-18-libcxx/src && rm -rf td
 
 # Install header-only deps to /opt/deps/include (shared)
 RUN mkdir -p /opt/deps/include && \

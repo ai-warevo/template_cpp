@@ -16,7 +16,7 @@
 #   3. /opt/deps/<toolchain>/ (Docker pre-compiled, ABI-matched)
 #      - gcc-15: /opt/deps/gcc-15/
 #      - clang-18 libstdc++: /opt/deps/clang-18-libstdc/
-#      - clang-18 libc++: /opt/deps/clang-18-libc++/
+#      - clang-18 libc++: /opt/deps/clang-18-libcxx/
 #   4. /opt/deps/include (header-only: json, stb)
 #   5. $ENV{AW_DEPS_DIR} (user-defined cache)
 #   6. find_package() (system install)
@@ -88,7 +88,7 @@ function(aw_fetch_dependency)
     
     if(CMAKE_CXX_FLAGS MATCHES "stdlib=libc\\+\\+")
         # Using libc++
-        set(_DEPS_VARIANT "clang-18-libc++")
+        set(_DEPS_VARIANT "clang-18-libcxx")
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         # clang-18 with libstdc++ (default)
         set(_DEPS_VARIANT "clang-18-libstdc")

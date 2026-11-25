@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        variant: [gcc-15, clang-18-libstdc, clang-18-libc++]
+        variant: [gcc-15, clang-18-libstdc, clang-18-libcxx]
     steps:
       - name: Checkout
         uses: actions/checkout@main
