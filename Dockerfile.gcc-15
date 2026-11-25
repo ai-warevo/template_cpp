@@ -52,7 +52,7 @@ RUN mkdir -p /opt/deps/gcc-15/src && \
     git clone --depth 1 https://github.com/tdlib/td.git && \
     cd td && mkdir build && cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/gcc-15 \
-        -DTDLIB_SHARED=OFF -DBUILD_SHARED_LIBS=OFF -DTD_CLI=OFF && \
+        -DTDLIB_SHARED=OFF -DBUILD_SHARED_LIBS=OFF -DTD_CLI=OFF -DBUILD_TESTING=OFF && \
     cmake --build . --parallel $(nproc) && \
     cmake --install . && \
     cd /opt/deps/gcc-15/src && rm -rf td

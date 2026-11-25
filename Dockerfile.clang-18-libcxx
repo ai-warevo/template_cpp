@@ -56,8 +56,9 @@ RUN mkdir -p /opt/deps/clang-18-libcxx/src && \
     cd td && mkdir build && cd build && \
     CC=/usr/bin/clang-18 CXX=/usr/bin/clang++-18 CXXFLAGS="-stdlib=libc++" \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/clang-18-libcxx \
-        -DTD_ENABLE_LTO=ON -DTD_ENABLE_PCH=ON && \
-    cmake --build . -j$(nproc) --target install && \
+        -DTDLIB_SHARED=OFF -DBUILD_SHARED_LIBS=OFF -DTD_CLI=OFF -DBUILD_TESTING=OFF && \
+    cmake --build . -j$(nproc) && \
+    cmake --install . && \
     cd /opt/deps/clang-18-libcxx/src && rm -rf td
 
 # Install header-only deps to /opt/deps/include (shared)
