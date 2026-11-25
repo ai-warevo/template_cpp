@@ -101,10 +101,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        variant: [gcc-15, clang-18-libstdc, clang-18-libc++]
+        variant: [gcc-15, clang-18-libstdc, clang-18-libcxx]
     steps:
       - name: Verify ${{ matrix.variant }}
         run: |
-          echo "=== ${{ matrix.variant }} ===" 
+          echo "=== ${{ matrix.variant }} ==="
           docker run --rm ghcr.io/ai-warevo/ci-cpp23:${{ matrix.variant }} cmake --version | head -1
           docker run --rm ghcr.io/ai-warevo/ci-cpp23:${{ matrix.variant }} ninja --version
