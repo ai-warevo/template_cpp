@@ -4,7 +4,7 @@
 # Inherits from: ghcr.io/ai-warevo/ci-cpp23:base
 #
 # Toolchain: gcc-15 (libstdc++ default)
-# Dependencies: spdlog v1.14.1, Catch2 v3.6.0, fmt v11.0.2
+# Dependencies: spdlog v1.14.1, Catch2 v3.6.0, fmt v11.0.2, TDLib
 # Installed to: /opt/deps/gcc-15/
 #
 # Pushed to ghcr.io/ai-warevo/ci-cpp23:gcc-15
@@ -47,7 +47,15 @@ RUN mkdir -p /opt/deps/gcc-15/src && \
     cd fmt && mkdir build && cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/gcc-15 -DFMT_TEST=OFF && \
     cmake --build . --parallel && cmake --install . && \
-    cd /opt/deps/gcc-15/src && rm -rf fmt
+    cd /opt/deps/gcc-15/src && rm -rf fmt && \
+    # TDLib (libstdc++)
+    git clone --depth 1 https://github.com/tdlib/td.git && \
+    cd td && mkdir build && cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/deps/gcc-15 \
+        -DTDLIB_SHARED=OFF -DBUILD_SHARED_LIBS=OFF -DTD_CLI=OFF && \
+    cmake --build . --parallel $(nproc) && \
+    cmake --install . && \
+    cd /opt/deps/gcc-15/src && rm -rf td
 
 # Install header-only deps to /opt/deps/include (shared)
 RUN mkdir -p /opt/deps/include && \
