@@ -18,6 +18,12 @@ Maintainer notes (see AGENTS.md, "Changelog and releases"):
 
 - Move CI Dockerfiles into `docker/` and update container image workflows.
 
+## [0.6.5] - 2026-11-28
+
+### Changed
+
+- Maintenance release
+
 ## [0.6.4] - 2026-11-25
 
 ### Changed
