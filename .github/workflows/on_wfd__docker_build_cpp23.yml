@@ -1,4 +1,4 @@
-name: Build & Push CI Docker Images
+name: on_wfd__docker_build_cpp23
 
 on:
   workflow_dispatch:
@@ -7,9 +7,6 @@ on:
         description: 'Image tag (default: latest)'
         required: false
         default: 'latest'
-  push:
-    tags:
-      - 'v*'
 
 permissions:
   contents: read
@@ -20,8 +17,7 @@ jobs:
     name: Build Base Image
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@main
+      - uses: actions/checkout@main
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -60,8 +56,7 @@ jobs:
       matrix:
         variant: [gcc-15, clang-18-libstdc, clang-18-libcxx]
     steps:
-      - name: Checkout
-        uses: actions/checkout@main
+      - uses: actions/checkout@main
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -80,7 +75,7 @@ jobs:
           images: ghcr.io/ai-warevo/ci-cpp23
           tags: |
             type=raw,value=${{ matrix.variant }}
-            type=raw,value=${{ github.event.inputs.tag || 'latest' }},enable=${{ matrix.variant == 'gcc-15' }}
+            type=raw,value=${{ inputs.tag }},enable=${{ matrix.variant == 'gcc-15' }}
 
       - name: Build and push ${{ matrix.variant }} image
         uses: docker/build-push-action@v5

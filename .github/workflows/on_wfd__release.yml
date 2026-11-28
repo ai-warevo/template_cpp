@@ -1,0 +1,36 @@
+name: on_wfd__release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version override (X.Y.Z); use auto to derive from CHANGELOG.md'
+        required: false
+        default: auto
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  # ────────────────────────────────────────────────────────────
+  # RESOLVE-VERSION — determine next version from CHANGELOG.md
+  # ────────────────────────────────────────────────────────────
+  resolve-version:
+    uses: ai-warevo/.github/.github/workflows/reusable__release__resolve_version.yml@main
+    with:
+      version_source: 'version_file'
+      version_file_path: 'VERSION'
+
+  # ────────────────────────────────────────────────────────────
+  # PUBLISH — create release, tag, and upload artifacts
+  # ────────────────────────────────────────────────────────────
+  publish:
+    needs: resolve-version
+    uses: ai-warevo/.github/.github/workflows/reusable__release__publish.yml@main
+    with:
+      version: ${{ needs.resolve-version.outputs.version }}
+      release_notes: ${{ needs.resolve-version.outputs.release_notes }}
+    permissions:
+      contents: write

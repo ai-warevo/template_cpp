@@ -1,17 +1,13 @@
-# Selftest — generate all templates, build, test, sanitizers
-#
-# Runs selftest.sh for each template, checks clang-format,
-# clang-tidy, ASan/UBSan (Clang), TSan (GCC).
-#
-# To override container image: fork this file and replace the image value
-# (GitHub Actions does not support env.* in container.image context).
-
-name: Selftest
+name: on_pr__main
 
 on:
-  workflow_dispatch:
   pull_request:
-    branches: [main, master]
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +15,36 @@ concurrency:
 
 jobs:
   # ────────────────────────────────────────────────────────────
-  # DISCOVER — find all templates
+  # FAST-CHECKS — lint + build on PR
+  # ────────────────────────────────────────────────────────────
+  fast-checks:
+    uses: ai-warevo/.github/.github/workflows/reusable-pr-fast.yml@main
+    with:
+      source_dir: .ci-project
+      build_dir: build
+      build_type: Debug
+      extra_args: -DCI_CHECK_BUILD_TESTS=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      extensions: cpp,hpp,c,h
+      container_image: ghcr.io/ai-warevo/ci-cpp23
+      setup_command: mkdir -p .ci-project && bash templates/scaffold.sh init static --name ci_check --ns aw::ci --out .ci-project
+
+  # ────────────────────────────────────────────────────────────
+  # UNIT-TESTS — matrix unit tests on PR
+  # ────────────────────────────────────────────────────────────
+  unit-tests:
+    uses: ai-warevo/.github/.github/workflows/reusable-matrix.yml@main
+    with:
+      source_dir: .ci-project
+      build_dir: build
+      enable_windows: false
+      cmake_extra_args_linux: >-
+        -DCI_CHECK_BUILD_TESTS=ON
+      ctest_timeout: 120
+      setup_command: >-
+        mkdir -p .ci-project && bash templates/scaffold.sh init static --name ci_check --ns aw::ci --out .ci-project
+
+  # ────────────────────────────────────────────────────────────
+  # DISCOVER — find all templates for selftest
   # ────────────────────────────────────────────────────────────
   discover:
     name: Discover Templates
@@ -69,7 +94,7 @@ jobs:
 
       # 3. clang-format check
       - name: clang-format check
-        uses: ai-warevo/.github/.github/actions/clang-format@main
+        uses: ai-warevo/.github/.github/actions-legacy/clang-format@main
         with:
           source_dir: .
           extensions: cpp,hpp
@@ -77,7 +102,7 @@ jobs:
       # 4. Build & Test (Clang + ASan/UBSan + compile_commands)
       - name: Setup toolchain (Clang + sanitizers)
         id: tc
-        uses: ai-warevo/.github/.github/actions/setup-toolchain@main
+        uses: ai-warevo/.github/.github/actions-legacy/setup-toolchain@main
         with:
           toolchain: clang18-libcxx
           container_mode: true
@@ -86,7 +111,7 @@ jobs:
       - name: Configure & Build (Clang + ASan/UBSan)
         env:
           DISPLAY: :99
-        uses: ai-warevo/.github/.github/actions/cmake-build@main
+        uses: ai-warevo/.github/.github/actions-legacy/cmake-build@main
         with:
           source_dir: .
           build_dir: build
@@ -96,7 +121,7 @@ jobs:
       - name: Run Tests (Clang + ASan/UBSan)
         env:
           DISPLAY: :99
-        uses: ai-warevo/.github/.github/actions/ctest-run@main
+        uses: ai-warevo/.github/.github/actions-legacy/ctest-run@main
         with:
           source_dir: .
           build_dir: build
@@ -105,7 +130,7 @@ jobs:
 
       # 5. clang-tidy
       - name: clang-tidy
-        uses: ai-warevo/.github/.github/actions/clang-tidy@main
+        uses: ai-warevo/.github/.github/actions-legacy/clang-tidy@main
         with:
           source_dir: .
           build_dir: build
@@ -133,21 +158,21 @@ jobs:
 
       - name: Configure ThreadSanitizer
         id: tsan
-        uses: ai-warevo/.github/.github/actions/setup-tsan@main
+        uses: ai-warevo/.github/.github/actions-legacy/setup-tsan@main
         with:
           toolchain: gcc15
           container_mode: false
 
       - name: Setup toolchain (GCC + TSan)
         id: tc
-        uses: ai-warevo/.github/.github/actions/setup-toolchain@main
+        uses: ai-warevo/.github/.github/actions-legacy/setup-toolchain@main
         with:
           toolchain: gcc15
           container_mode: false
           sanitizer: thread
 
       - name: Configure & Build (GCC + TSan)
-        uses: ai-warevo/.github/.github/actions/cmake-build@main
+        uses: ai-warevo/.github/.github/actions-legacy/cmake-build@main
         with:
           source_dir: .
           build_dir: build-tsan
@@ -156,7 +181,7 @@ jobs:
           parallel: false
 
       - name: Run Tests (GCC + TSan)
-        uses: ai-warevo/.github/.github/actions/ctest-run@main
+        uses: ai-warevo/.github/.github/actions-legacy/ctest-run@main
         with:
           source_dir: .
           build_dir: build-tsan
