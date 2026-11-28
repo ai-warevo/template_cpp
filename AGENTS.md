@@ -52,7 +52,7 @@ The `gui` template has special architecture requirements:
 - **Three-layer separation:** Core (pure C++23, zero `imgui.h`), UI (ImGui rendering), and deliverables (app + overlay)
 - **Headless unit tests:** State/config/registry tests must run without GLFW/OpenGL initialization
 - **Platform-specific overlays:** Separate `overlay_win32.cpp` and `overlay_posix.cpp` with conditional compilation
-- **GUI-specific Docker image:** Use `Dockerfile.gui` (inherits from base, adds X11/OpenGL/GLFW/ImGui)
+- **GUI-specific Docker image:** Use `docker/Dockerfile.gui` (inherits from base, adds X11/OpenGL/GLFW/ImGui)
 - **CI support:** Xvfb for headless Linux testing; Windows native build
 
 ### Dependency Caching

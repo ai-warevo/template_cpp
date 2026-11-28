@@ -41,7 +41,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: Dockerfile.base
+          file: docker/Dockerfile.base
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -81,7 +81,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: Dockerfile.${{ matrix.variant }}
+          file: docker/Dockerfile.${{ matrix.variant }}
           build-args: |
             BASE_IMAGE=ghcr.io/ai-warevo/ci-cpp23:base
           push: true

@@ -128,6 +128,7 @@ CHANGELOG.md          user-visible changes
 CONTRIBUTING.md       how to contribute
 .clang-format .clang-tidy .editorconfig .gitignore .gitattributes
 cmake/                shared CMake modules (ProjectConfig, AWProject, Tests, CoreLibrary, Library/, Windows/)
+docker/               CI container Dockerfiles
 templates/
   scaffold.sh         the generator: list | init | eject
   selftest.sh         generates, builds and tests every template
