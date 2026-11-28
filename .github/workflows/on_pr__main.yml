@@ -15,33 +15,15 @@ concurrency:
 
 jobs:
   # ────────────────────────────────────────────────────────────
-  # FAST-CHECKS — lint + build on PR
+  # SHELLCHECK — lint generator scripts
   # ────────────────────────────────────────────────────────────
-  fast-checks:
-    uses: ai-warevo/.github/.github/workflows/reusable-pr-fast.yml@main
-    with:
-      source_dir: .ci-project
-      build_dir: build
-      build_type: Debug
-      extra_args: -DCI_CHECK_BUILD_TESTS=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-      extensions: cpp,hpp,c,h
-      container_image: ghcr.io/ai-warevo/ci-cpp23
-      setup_command: mkdir -p .ci-project && bash templates/scaffold.sh init static --name ci_check --ns aw::ci --out .ci-project
-
-  # ────────────────────────────────────────────────────────────
-  # UNIT-TESTS — matrix unit tests on PR
-  # ────────────────────────────────────────────────────────────
-  unit-tests:
-    uses: ai-warevo/.github/.github/workflows/reusable-matrix.yml@main
-    with:
-      source_dir: .ci-project
-      build_dir: build
-      enable_windows: false
-      cmake_extra_args_linux: >-
-        -DCI_CHECK_BUILD_TESTS=ON
-      ctest_timeout: 120
-      setup_command: >-
-        mkdir -p .ci-project && bash templates/scaffold.sh init static --name ci_check --ns aw::ci --out .ci-project
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Lint generator scripts
+        run: shellcheck templates/*.sh
 
   # ────────────────────────────────────────────────────────────
   # DISCOVER — find all templates for selftest
