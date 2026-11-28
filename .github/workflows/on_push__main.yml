@@ -24,3 +24,25 @@ jobs:
       - uses: actions/checkout@main
       - name: Lint generator scripts
         run: shellcheck templates/*.sh
+
+  # ────────────────────────────────────────────────────────────
+  # SELFTEST — validate generator on all platforms
+  # ────────────────────────────────────────────────────────────
+  selftest:
+    name: Selftest (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+          - os: macos-latest
+          - os: windows-latest
+    steps:
+      - uses: actions/checkout@main
+
+      - name: Run selftest (no GUI)
+        env:
+          RUN_GUI_TESTS: "0"
+        shell: bash
+        run: bash templates/selftest.sh

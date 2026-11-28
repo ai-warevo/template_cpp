@@ -2,12 +2,6 @@ name: on_wfd__release
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version override (X.Y.Z); use auto to derive from CHANGELOG.md'
-        required: false
-        default: auto
-        type: string
 
 permissions:
   contents: write
@@ -15,7 +9,7 @@ permissions:
 
 jobs:
   # ────────────────────────────────────────────────────────────
-  # RESOLVE-VERSION — determine next version from CHANGELOG.md
+  # RESOLVE-VERSION — read version from VERSION file
   # ────────────────────────────────────────────────────────────
   resolve-version:
     uses: ai-warevo/.github/.github/workflows/reusable__release__resolve_version.yml@main
@@ -24,10 +18,24 @@ jobs:
       version_file_path: 'VERSION'
 
   # ────────────────────────────────────────────────────────────
-  # PUBLISH — create release, tag, and upload artifacts
+  # SELFTEST — validate generator before release
+  # ────────────────────────────────────────────────────────────
+  selftest:
+    name: Selftest
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@main
+
+      - name: Run selftest (no GUI)
+        env:
+          RUN_GUI_TESTS: "0"
+        run: bash templates/selftest.sh
+
+  # ────────────────────────────────────────────────────────────
+  # PUBLISH — bump version, create release, tag and push
   # ────────────────────────────────────────────────────────────
   publish:
-    needs: resolve-version
+    needs: [resolve-version, selftest]
     uses: ai-warevo/.github/.github/workflows/reusable__release__publish.yml@main
     with:
       version: ${{ needs.resolve-version.outputs.version }}
